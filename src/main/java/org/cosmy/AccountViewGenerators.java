@@ -27,14 +27,11 @@ public class AccountViewGenerators {
     private static void expandAccountView(TreeItem<String> item, CosmosAccount account) {
         if (!account.isAccountRefreshed()) {
             item.getChildren().removeFirst();
-            Mono<Void> refreshed = account.refresh();
-            refreshed.doOnSuccess(unused -> {
-                account.iterateDatabases().forEachRemaining(cosmosDatabase -> {
+            account.refresh();
+            account.iterateDatabases().forEachRemaining(cosmosDatabase -> {
                     item.getChildren().add(cosmosDatabase.generateView());
                 });
-            }).doFinally(unused -> {
-                account.setAccountRefreshed(true);
-            }).subscribe();
+            account.setAccountRefreshed(true);
         }
     }
 }

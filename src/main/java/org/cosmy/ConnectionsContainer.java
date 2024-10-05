@@ -1,8 +1,5 @@
 package org.cosmy;
 
-import com.azure.core.credential.AzureKeyCredential;
-import com.azure.cosmos.CosmosAsyncClient;
-import com.azure.cosmos.CosmosClientBuilder;
 import org.cosmy.model.CosmosAccount;
 import org.cosmy.state.FilePersistedStateManager;
 import org.cosmy.state.IPersistedStateManager;

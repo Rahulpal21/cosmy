@@ -1,7 +1,7 @@
 package org.cosmy.model;
 
 import com.azure.core.credential.AzureKeyCredential;
-import com.azure.cosmos.CosmosAsyncClient;
+import com.azure.cosmos.CosmosClient;
 import com.azure.cosmos.CosmosClientBuilder;
 import reactor.core.publisher.Mono;
 
@@ -15,10 +15,10 @@ public class CosmosAccount implements Serializable {
     private String name;
     private String accountHost;
     private String accountKey;
-    private transient CosmosAsyncClient client;
+    private transient CosmosClient client;
     private Map<String, CosmosDatabase> databases;
     private transient boolean isClientInitialized = false;
-    private boolean isAccountRefreshed = false;
+    private transient boolean isAccountRefreshed = false;
 
     public CosmosAccount(String name, String connectionString, String accountKey) {
         this.name = name;
@@ -60,11 +60,11 @@ public class CosmosAccount implements Serializable {
         return databases.get(database);
     }
 
-    public CosmosAsyncClient getClient() {
+    public CosmosClient getClient() {
         return client;
     }
 
-    public void setClient(CosmosAsyncClient client) {
+    public void setClient(CosmosClient client) {
         this.client = client;
     }
 
@@ -84,16 +84,16 @@ public class CosmosAccount implements Serializable {
         isAccountRefreshed = accountRefreshed;
     }
 
-    public Mono<Void> refresh() {
+    public void refresh() {
         databases = new HashMap<>();
         if (!isClientInitialized) {
             initializeClient();
         }
-        return client.readAllDatabases().handle((dbProp, syncSink) -> {
+        client.readAllDatabases().iterator().forEachRemaining((dbProp) -> {
             CosmosDatabase dbInstance = new CosmosDatabase(dbProp.getId());
             dbInstance.refresh(client);
             databases.put(dbProp.getId(), dbInstance);
-        }).then();
+        });
     }
 
     public int databaseCount() {
@@ -107,7 +107,7 @@ public class CosmosAccount implements Serializable {
     public void initializeClient() {
         if (!isClientInitialized) {
             AzureKeyCredential credential = new AzureKeyCredential(this.getAccountKey());
-            CosmosAsyncClient asyncClient = new CosmosClientBuilder().credential(credential).endpoint(this.getAccountHost()).buildAsyncClient();
+            CosmosClient asyncClient = new CosmosClientBuilder().credential(credential).endpoint(this.getAccountHost()).buildClient();
             asyncClient.readAllDatabases();
             setClient(asyncClient);
             setClientInitialized(true);

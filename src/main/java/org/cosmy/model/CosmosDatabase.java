@@ -1,6 +1,6 @@
 package org.cosmy.model;
 
-import com.azure.cosmos.CosmosAsyncClient;
+import com.azure.cosmos.CosmosClient;
 import javafx.scene.control.TreeItem;
 
 import java.io.Serializable;
@@ -29,9 +29,9 @@ public class CosmosDatabase implements Serializable {
         this.name = name;
     }
 
-    public void refresh(CosmosAsyncClient client) {
+    public void refresh(CosmosClient client) {
         collections = new HashMap<>();
-        client.getDatabase(this.name).readAllContainers().handle((contProp, syncSink) -> {
+        client.getDatabase(this.name).readAllContainers().iterator().forEachRemaining((contProp) -> {
             CosmosContainer contInstance = new CosmosContainer(contProp.getId());
             contInstance.refresh(client);
             collections.put(contInstance.getName(), contInstance);
