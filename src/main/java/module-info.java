@@ -7,4 +7,6 @@ module org.cosmy.example {
     exports org.cosmy;
     exports org.cosmy.model;
     opens org.cosmy.model to javafx.fxml;
+    exports org.cosmy.ui.tabs;
+    opens org.cosmy.ui.tabs to javafx.fxml;
 }

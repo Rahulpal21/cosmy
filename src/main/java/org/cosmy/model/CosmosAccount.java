@@ -1,9 +1,9 @@
 package org.cosmy.model;
 
 import com.azure.core.credential.AzureKeyCredential;
+import com.azure.cosmos.CosmosAsyncClient;
 import com.azure.cosmos.CosmosClient;
 import com.azure.cosmos.CosmosClientBuilder;
-import reactor.core.publisher.Mono;
 
 import java.io.Serializable;
 import java.util.HashMap;
@@ -16,6 +16,7 @@ public class CosmosAccount implements Serializable {
     private String accountHost;
     private String accountKey;
     private transient CosmosClient client;
+    private transient CosmosAsyncClient asyncClient;
     private Map<String, CosmosDatabase> databases;
     private transient boolean isClientInitialized = false;
     private transient boolean isAccountRefreshed = false;
@@ -104,12 +105,24 @@ public class CosmosAccount implements Serializable {
         return databases.values().iterator();
     }
 
+    public CosmosAsyncClient getAsyncClient() {
+        return asyncClient;
+    }
+
+    public void setAsyncClient(CosmosAsyncClient asyncClient) {
+        this.asyncClient = asyncClient;
+    }
+
     public void initializeClient() {
         if (!isClientInitialized) {
             AzureKeyCredential credential = new AzureKeyCredential(this.getAccountKey());
-            CosmosClient asyncClient = new CosmosClientBuilder().credential(credential).endpoint(this.getAccountHost()).buildClient();
+            CosmosClientBuilder builder = new CosmosClientBuilder().credential(credential).endpoint(this.getAccountHost());
+            CosmosClient client = builder.buildClient();
+            client.readAllDatabases();
+            setClient(client);
+            CosmosAsyncClient asyncClient = builder.buildAsyncClient();
             asyncClient.readAllDatabases();
-            setClient(asyncClient);
+            setAsyncClient(asyncClient);
             setClientInitialized(true);
         }
     }

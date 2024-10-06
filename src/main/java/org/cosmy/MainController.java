@@ -1,11 +1,13 @@
 package org.cosmy;
 
 import javafx.event.ActionEvent;
+import javafx.event.EventType;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -24,6 +26,12 @@ public class MainController {
     private TabPane tabs;
 
     @FXML
+    private SplitPane splitPane;
+
+    @FXML
+    private VBox vBox;
+
+    @FXML
     private void switchToSecondary() throws IOException {
         App.setRoot("layout");
     }
@@ -32,7 +40,12 @@ public class MainController {
     private ItemsHandler itemsHandler = new ItemsHandler();
 
     @FXML
-    private void initialize(){
+    private void initialize() {
+        //Keep updating the divider for splitpane to adjsut to chnaging window size
+        vBox.widthProperty().addListener((observableValue, number, t1) -> {
+            splitPane.setDividerPosition(0, 0.25);
+        });
+
         modelRegistry = ObservableModelRegistryImpl.getInstance();
         System.out.println("initializing controller..");
         TreeItem<String> accountRoot = new TreeItem<>("Accounts");
@@ -42,20 +55,20 @@ public class MainController {
                 @Override
                 protected void updateItem(String s, boolean b) {
                     super.updateItem(s, b);
-                    if(b){
+                    if (b) {
                         setText(null);
-                    }else {
+                    } else {
                         setText(s);
                     }
                 }
             };
             cell.setOnMouseClicked(mouseEvent -> {
                 Node interactedNode = mouseEvent.getPickResult().getIntersectedNode();
-                if(mouseEvent.getEventType() == MouseEvent.MOUSE_CLICKED && mouseEvent.getClickCount() == 2 && interactedNode instanceof Text){
+                if (mouseEvent.getEventType() == MouseEvent.MOUSE_CLICKED && mouseEvent.getClickCount() == 2 && interactedNode instanceof Text) {
                     Text node = (Text) interactedNode;
                     String nodeName = node.getText();
-                    if(nodeName.equalsIgnoreCase("Items")){
-                        if(node.getParent() instanceof TreeCell){
+                    if (nodeName.equalsIgnoreCase("Items")) {
+                        if (node.getParent() instanceof TreeCell) {
                             TreeItem<String> treeItem = ((TreeCell<String>) node.getParent()).getTreeItem();
                             TreeItem<String> parent1 = treeItem.getParent();
                             TreeItem<String> parent2 = parent1.getParent();
@@ -65,7 +78,7 @@ public class MainController {
                     }
                 }
             });
-            return  cell;
+            return cell;
         });
 
         dbAccounts.setRoot(accountRoot);

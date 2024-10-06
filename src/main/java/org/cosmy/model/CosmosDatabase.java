@@ -21,6 +21,10 @@ public class CosmosDatabase implements Serializable {
         return this;
     }
 
+    public CosmosContainer getCollection(String collectionName){
+        return collections.get(collectionName);
+    }
+
     public String getName() {
         return name;
     }
