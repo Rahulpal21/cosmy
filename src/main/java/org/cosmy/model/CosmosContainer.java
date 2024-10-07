@@ -3,7 +3,7 @@ package org.cosmy.model;
 import com.azure.cosmos.CosmosAsyncContainer;
 import javafx.event.EventTarget;
 import javafx.scene.control.TreeItem;
-import org.cosmy.ui.ContainerDetailsFlyweight;
+import org.cosmy.ui.ContainerDetails;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -17,7 +17,7 @@ public class CosmosContainer implements Serializable {
     private transient CosmosAsyncContainer asyncContainer;
     private transient AtomicBoolean initialized = new AtomicBoolean(false);
     private transient CosmosDatabase parent;
-    private transient ContainerDetailsFlyweight containerDetails;
+    private transient ContainerDetails containerDetails;
 
     public CosmosContainer(String name, CosmosDatabase parent) {
         this.name = name;
@@ -36,11 +36,22 @@ public class CosmosContainer implements Serializable {
         this.name = name;
     }
 
+    public com.azure.cosmos.CosmosContainer getContainer() {
+        return container;
+    }
+
+    public CosmosAsyncContainer getAsyncContainer() {
+        return asyncContainer;
+    }
+
+    public ContainerDetails getContainerDetails() {
+        return containerDetails;
+    }
+
     public void refresh() {
         container = this.parent.getDatabase().getContainer(this.getName());
         asyncContainer = this.parent.getAsyncDatabase().getContainer(this.getName());
-        this.containerDetails = new ContainerDetailsFlyweight(this.name, this.parent.getName(), this.parent.getParent().getName());
-        this.containerDetails.setPartitionKeyPaths(new ArrayList<>(container.read().getProperties().getPartitionKeyDefinition().getPaths()));
+        this.containerDetails = new ContainerDetails(container);
         initialized.set(true);
     }
 

@@ -5,7 +5,6 @@ import com.azure.cosmos.CosmosAsyncClient;
 import com.azure.cosmos.CosmosClient;
 import com.azure.cosmos.CosmosClientBuilder;
 
-import java.io.Externalizable;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.Serializable;

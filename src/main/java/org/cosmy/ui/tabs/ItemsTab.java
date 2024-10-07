@@ -1,8 +1,5 @@
 package org.cosmy.ui.tabs;
 
-import com.azure.cosmos.CosmosAsyncClient;
-import com.azure.cosmos.CosmosAsyncContainer;
-import com.azure.cosmos.CosmosContainer;
 import com.azure.cosmos.models.SqlQuerySpec;
 import com.azure.cosmos.util.CosmosPagedFlux;
 import javafx.collections.ObservableList;
@@ -11,43 +8,35 @@ import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.StackPane;
-import org.cosmy.ConnectionsContainer;
 import org.cosmy.IObservableModelRegistry;
 import org.cosmy.ObservableModelRegistryImpl;
-import org.cosmy.model.CosmosAccount;
+import org.cosmy.model.CosmosContainer;
 import org.cosmy.model.ObservableModelKey;
-import org.cosmy.ui.ContainerDetailsFlyweight;
 import org.cosmy.ui.predicates.MouseDoubleClickEvent;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 public class ItemsTab implements ITab {
-    private final String databaseName;
-    private final String containerName;
-    private String tabName;
+    private final String tabName;
+    private final CosmosContainer container;
     private ObservableList<Label> observableItems;
     private final StackPane stackPane;
-    private final String accountName;
     private final ObservableList<Node> observableStackPaneNodes;
     private final AnchorPane progressPane;
     private ItemsTabContentPane itemTextArea;
-    private ContainerDetailsFlyweight containerDetails;
 
-    public ItemsTab(String containerName, String databaseName, String accountName) {
-        containerDetails = new ContainerDetailsFlyweight(containerName, databaseName, accountName);
-        this.accountName = accountName;
-        this.databaseName = databaseName;
-        this.containerName = containerName;
+    public ItemsTab(CosmosContainer container) {
+        this.container = container;
         this.stackPane = new StackPane();
         this.observableStackPaneNodes = this.stackPane.getChildren();
         this.progressPane = new AnchorPane(new ProgressBar());
 
-        tabName = containerName.concat(databaseName).concat("@").concat(accountName);
+        tabName = generateTabName(container);
         //TODO error handling
-        CosmosAccount account = ConnectionsContainer.getInstance().getConnection(accountName);
+    }
+
+    private String generateTabName(CosmosContainer container) {
+        return container.getName().concat(container.getParent().getName()).concat("@").concat(container.getParent().getParent().getName());
     }
 
     @Override
@@ -55,8 +44,9 @@ public class ItemsTab implements ITab {
 
         IObservableModelRegistry modelRegistry = ObservableModelRegistryImpl.getInstance();
         ObservableList<Tab> tabs = (ObservableList<Tab>) modelRegistry.lookup(ObservableModelKey.TABS);
-        Tab tab = new Tab(containerName);
+        Tab tab = new Tab(container.getName());
         tab.setId(tabName);
+
         SplitPane splitPane = new SplitPane();
 
         splitPane.widthProperty().addListener((observableValue, number, t1) -> {
@@ -75,22 +65,21 @@ public class ItemsTab implements ITab {
         tab.setContent(splitPane);
         tabs.add(tab);
         loadItems();
-
     }
 
     public void loadItems() {
-        CosmosAsyncClient asyncClient = ConnectionsContainer.getInstance().getConnection(accountName).getAsyncClient();
-        CosmosAsyncContainer container = asyncClient.getDatabase(databaseName).getContainer(containerName);
-        String readAllQuery = "SELECT c.id FROM c";
+        String pKeyPath = container.getContainerDetails().getPartitionKeyPaths().getFirst();
+        String pKeyAttr = pKeyPath.replace("/", "");
+        String readAllQuery = "SELECT c.id, c."+pKeyAttr+" FROM c";
         SqlQuerySpec querySpec = new SqlQuerySpec(readAllQuery);
-        CosmosPagedFlux<Map> pagedFlux = container.queryItems(querySpec, Map.class);
+        CosmosPagedFlux<Map> pagedFlux = container.getAsyncContainer().queryItems(querySpec, Map.class);
         pagedFlux.handle((map, synchronousSink) -> {
-            Label item = new Label((String) map.get("id"));
-
+            CosmosItem item = new CosmosItem(map.get(pKeyAttr) ,(String) map.get("id"));
+            System.out.println(item.getItemId()+"  "+ item.getPartitionKey());
             item.addEventHandler(EventType.ROOT, event -> {
                 if (MouseDoubleClickEvent.evaluate(event)) {
-                    String itemIid = ((Label) event.getSource()).getText();
-                    itemTextArea.loadItem(itemIid, containerName, databaseName, accountName);
+                    CosmosItem source = (CosmosItem) event.getSource();
+                    itemTextArea.loadItem(source.getItemId(), source.getPartitionKey(), container);
                 }
             });
             this.observableItems.add(item);

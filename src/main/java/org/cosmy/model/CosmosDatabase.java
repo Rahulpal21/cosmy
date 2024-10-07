@@ -48,6 +48,10 @@ public class CosmosDatabase implements Serializable {
         return database;
     }
 
+    public CosmosContainer getContainer(String containerName) {
+        return collections.get(containerName);
+    }
+
     public void refresh() {
         database = this.parent.getClient().getDatabase(name);
         asyncDatabase = this.parent.getAsyncClient().getDatabase(name);
