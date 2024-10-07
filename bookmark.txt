@@ -1,0 +1,4 @@
+reimplement initialize and refresh to only initializee cosmosclient in accounts methhod.
+database and cntainer should only have refresh methtod
+account refresh will in turn call database and container refresh iteratively
+

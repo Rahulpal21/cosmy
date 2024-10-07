@@ -5,20 +5,24 @@ import com.azure.cosmos.CosmosAsyncClient;
 import com.azure.cosmos.CosmosClient;
 import com.azure.cosmos.CosmosClientBuilder;
 
+import java.io.Externalizable;
+import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class CosmosAccount implements Serializable {
     private static final long serialVersionUID = 123456L;
     private String name;
     private String accountHost;
     private String accountKey;
+    private Map<String, CosmosDatabase> databases;
     private transient CosmosClient client;
     private transient CosmosAsyncClient asyncClient;
-    private Map<String, CosmosDatabase> databases;
-    private transient boolean isClientInitialized = false;
+    private transient AtomicBoolean initialized = new AtomicBoolean(false);
     private transient boolean isAccountRefreshed = false;
 
     public CosmosAccount(String name, String connectionString, String accountKey) {
@@ -26,6 +30,11 @@ public class CosmosAccount implements Serializable {
         this.accountHost = connectionString;
         this.accountKey = accountKey;
         this.databases = new HashMap<>();
+    }
+
+    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+        in.defaultReadObject();
+        initialized = new AtomicBoolean(false);
     }
 
     public String getName() {
@@ -69,14 +78,6 @@ public class CosmosAccount implements Serializable {
         this.client = client;
     }
 
-    public boolean isClientInitialized() {
-        return isClientInitialized;
-    }
-
-    public void setClientInitialized(boolean clientInitialized) {
-        isClientInitialized = clientInitialized;
-    }
-
     public boolean isAccountRefreshed() {
         return isAccountRefreshed;
     }
@@ -85,15 +86,25 @@ public class CosmosAccount implements Serializable {
         isAccountRefreshed = accountRefreshed;
     }
 
-    public void refresh() {
-        databases = new HashMap<>();
-        if (!isClientInitialized) {
-            initializeClient();
+    public void initialize() {
+        if (!initialized.get()) {
+            AzureKeyCredential credential = new AzureKeyCredential(this.getAccountKey());
+            CosmosClientBuilder builder = new CosmosClientBuilder().credential(credential).endpoint(this.getAccountHost());
+            client = builder.buildClient();
+            asyncClient = builder.buildAsyncClient();
+            initialized.set(true);
         }
+    }
+
+    public void refresh() {
+        if (!initialized.get()) {
+            initialize();
+        }
+        databases = new HashMap<>();
         client.readAllDatabases().iterator().forEachRemaining((dbProp) -> {
-            CosmosDatabase dbInstance = new CosmosDatabase(dbProp.getId());
-            dbInstance.refresh(client);
+            CosmosDatabase dbInstance = new CosmosDatabase(dbProp.getId(), this);
             databases.put(dbProp.getId(), dbInstance);
+            dbInstance.refresh();
         });
     }
 
@@ -113,17 +124,4 @@ public class CosmosAccount implements Serializable {
         this.asyncClient = asyncClient;
     }
 
-    public void initializeClient() {
-        if (!isClientInitialized) {
-            AzureKeyCredential credential = new AzureKeyCredential(this.getAccountKey());
-            CosmosClientBuilder builder = new CosmosClientBuilder().credential(credential).endpoint(this.getAccountHost());
-            CosmosClient client = builder.buildClient();
-            client.readAllDatabases();
-            setClient(client);
-            CosmosAsyncClient asyncClient = builder.buildAsyncClient();
-            asyncClient.readAllDatabases();
-            setAsyncClient(asyncClient);
-            setClientInitialized(true);
-        }
-    }
 }
