@@ -13,7 +13,7 @@
 
 <TabPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" tabClosingPolicy="UNAVAILABLE" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1">
     <tabs>
-        <Tab id="uniqueTabName" text="containerName">
+        <Tab id="uniqueTabName" text="">
             <content>
                 <SplitPane fx:id="splitPane" dividerPositions="0.5">
                     <items>
@@ -21,13 +21,14 @@
                             <children>
                                 <VBox fx:id="itemListVBox">
                                     <children>
-                                        <ToolBar prefHeight="40.0" prefWidth="200.0">
+                                        <ToolBar prefHeight="40.0" prefWidth="200.0" VBox.vgrow="NEVER">
                                             <items>
+                                                <Button mnemonicParsing="false" text="Reload" />
                                                 <Button mnemonicParsing="false" text="Filter" />
                                             </items>
                                         </ToolBar>
-                                        <ListView id="itemList" fx:id="itemListView" accessibleHelp="this is accessible help" accessibleText="This is accessible text" />
-                                        <ToolBar prefHeight="40.0" prefWidth="200.0">
+                                        <ListView id="itemList" fx:id="itemListView" accessibleHelp="this is accessible help" accessibleText="This is accessible text" VBox.vgrow="ALWAYS"/>
+                                        <ToolBar prefHeight="40.0" prefWidth="200.0" VBox.vgrow="NEVER">
                                             <items>
                                                 <Button disable="true" mnemonicParsing="false" text="Prev" />
                                                 <Button disable="true" mnemonicParsing="false" text="Next" />
@@ -40,14 +41,14 @@
                         </StackPane>
                         <VBox>
                             <children>
-                                <ToolBar prefHeight="40.0" prefWidth="200.0">
+                                <ToolBar prefHeight="40.0" prefWidth="200.0" VBox.vgrow="NEVER">
                                     <items>
                                         <Button mnemonicParsing="false" text="New" />
                                         <Button mnemonicParsing="false" text="Save" />
                                         <Button mnemonicParsing="false" text="Delete" />
                                     </items>
                                 </ToolBar>
-                                <TextArea id="itemTextArea" fx:id="itemTextArea" accessibleHelp="This is accessible help" accessibleText="This is accessible text" maxHeight="1.7976931348623157E308" minWidth="-Infinity" promptText="say something" text="Helllo hello " />
+                                <TextArea id="itemTextArea" fx:id="itemTextArea" accessibleHelp="This is accessible help" accessibleText="This is accessible text" maxHeight="1.7976931348623157E308" minWidth="-Infinity" promptText="say something" text="Helllo hello " VBox.vgrow="ALWAYS"/>
                             </children>
                         </VBox>
                     </items>
