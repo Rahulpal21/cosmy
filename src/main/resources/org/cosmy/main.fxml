@@ -100,7 +100,7 @@
                   </VBox>
           </children>
         </AnchorPane>
-            <TabPane fx:id="tabs" prefHeight="551.0" prefWidth="622.0" tabClosingPolicy="UNAVAILABLE" />
+            <TabPane fx:id="tabs" prefHeight="551.0" prefWidth="622.0" tabClosingPolicy="ALL_TABS" />
       </items>
     </SplitPane>
     <HBox id="HBox" alignment="CENTER_LEFT" spacing="5.0" VBox.vgrow="NEVER">

@@ -97,7 +97,7 @@ public class BulkImportController {
                 }).map(item -> CosmosBulkOperations.getCreateItemOperation(item, new PartitionKey(item.get(partitionKey).asText())));
             } else if (jsonNode.isObject()) {
                 treatIds(jsonNode, idFlag);
-                operationsFlux = Flux.just(CosmosBulkOperations.getCreateItemOperation(jsonNode, new PartitionKey(jsonNode.get(partitionKey))));
+                operationsFlux = Flux.just(CosmosBulkOperations.getCreateItemOperation(jsonNode, new PartitionKey(jsonNode.get(partitionKey).asText())));
             }
 
             Flux<CosmosBulkOperationResponse<Object>> responseFlux = asyncContainer.executeBulkOperations(operationsFlux);
