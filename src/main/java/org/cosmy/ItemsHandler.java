@@ -22,7 +22,6 @@ public class ItemsHandler {
         }
         ObservableList<Tab> tabs = ((TabPane) itemsTabPane).getTabs();
         Tab first = tabs.getFirst();
-
         IObservableModelRegistry modelRegistry = ObservableModelRegistryImpl.getInstance();
         ObservableList<Tab> tabsList = (ObservableList<Tab>) modelRegistry.lookup(ObservableModelKey.TABS);
         tabsList.add(first);

@@ -1,10 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.*?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.ProgressBar?>
+<?import javafx.scene.control.SplitPane?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.ToolBar?>
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
-<TabPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
-         tabClosingPolicy="UNAVAILABLE" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1">
+
+<TabPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" tabClosingPolicy="UNAVAILABLE" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1">
     <tabs>
         <Tab id="uniqueTabName" text="containerName">
             <content>
@@ -12,34 +19,35 @@
                     <items>
                         <StackPane fx:id="stackPane">
                             <children>
-                                <VBox>
+                                <VBox fx:id="itemListVBox">
                                     <children>
                                         <ToolBar prefHeight="40.0" prefWidth="200.0">
                                             <items>
-                                                <Button mnemonicParsing="false" text="Filter"/>
+                                                <Button mnemonicParsing="false" text="Filter" />
                                             </items>
                                         </ToolBar>
-                                        <ListView id="itemList" fx:id="itemListView"
-                                                  accessibleHelp="this is accessible help"
-                                                  accessibleText="This is accessible text"/>
+                                        <ListView id="itemList" fx:id="itemListView" accessibleHelp="this is accessible help" accessibleText="This is accessible text" />
+                                        <ToolBar prefHeight="40.0" prefWidth="200.0">
+                                            <items>
+                                                <Button disable="true" mnemonicParsing="false" text="Prev" />
+                                                <Button disable="true" mnemonicParsing="false" text="Next" />
+                                            </items>
+                                        </ToolBar>
                                     </children>
                                 </VBox>
-                                <ProgressBar fx:id="progressBar"/>
+                                <ProgressBar fx:id="progressBar" />
                             </children>
                         </StackPane>
                         <VBox>
                             <children>
                                 <ToolBar prefHeight="40.0" prefWidth="200.0">
                                     <items>
-                                        <Button mnemonicParsing="false" text="New"/>
-                                        <Button mnemonicParsing="false" text="Save"/>
-                                        <Button mnemonicParsing="false" text="Delete"/>
+                                        <Button mnemonicParsing="false" text="New" />
+                                        <Button mnemonicParsing="false" text="Save" />
+                                        <Button mnemonicParsing="false" text="Delete" />
                                     </items>
                                 </ToolBar>
-                                <TextArea id="itemTextArea" fx:id="itemTextArea"
-                                          accessibleHelp="This is accessible help"
-                                          accessibleText="This is accessible text" promptText="say something"
-                                          text="Helllo hello "/>
+                                <TextArea id="itemTextArea" fx:id="itemTextArea" accessibleHelp="This is accessible help" accessibleText="This is accessible text" maxHeight="1.7976931348623157E308" minWidth="-Infinity" promptText="say something" text="Helllo hello " />
                             </children>
                         </VBox>
                     </items>
