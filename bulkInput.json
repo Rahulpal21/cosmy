@@ -1,0 +1,42 @@
+[
+  {
+    "id": "{0D008F94-BE0A-42AE-8FA6-42B3D432046D}1",
+    "lock_name": "TestLock",
+    "owner": "timempass",
+    "isAquired": false,
+    "createdAt": null,
+    "lastUpdatedAt": null
+  },
+  {
+    "id": "{0D008F94-BE0A-42AE-8FA6-42B3D432046D}2",
+    "lock_name": "TestLock",
+    "owner": "timempass",
+    "isAquired": false,
+    "createdAt": null,
+    "lastUpdatedAt": null
+  },
+  {
+    "id": "{0D008F94-BE0A-42AE-8FA6-42B3D432046D}3",
+    "lock_name": "TestLock",
+    "owner": "timempass",
+    "isAquired": false,
+    "createdAt": null,
+    "lastUpdatedAt": null
+  },
+  {
+    "id": "{0D008F94-BE0A-42AE-8FA6-42B3D432046D}4",
+    "lock_name": "TestLock",
+    "owner": "timempass",
+    "isAquired": false,
+    "createdAt": null,
+    "lastUpdatedAt": null
+  },
+  {
+    "id": "{0D008F94-BE0A-42AE-8FA6-42B3D432046D}5",
+    "lock_name": "TestLock",
+    "owner": "timempass",
+    "isAquired": false,
+    "createdAt": null,
+    "lastUpdatedAt": null
+  }
+]

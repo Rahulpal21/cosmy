@@ -1,0 +1,7 @@
+{
+  "lock_name": "TestLock",
+  "owner": "timempass",
+  "isAquired": false,
+  "createdAt": null,
+  "lastUpdatedAt": null
+}

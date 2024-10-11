@@ -94,4 +94,12 @@ public class MainController {
         dialog.initModality(Modality.APPLICATION_MODAL);
         dialog.showAndWait();
     }
+
+    public void bulkImportDialog(ActionEvent actionEvent) throws IOException {
+        Stage dialog = new Stage();
+        dialog.setScene(new Scene(App.loadFXML("bulkImportDialog")));
+        dialog.initOwner(App.mainStage);
+        dialog.initModality(Modality.APPLICATION_MODAL);
+        dialog.showAndWait();
+    }
 }

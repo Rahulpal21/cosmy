@@ -5,6 +5,7 @@ import javafx.scene.control.TreeItem;
 
 import java.io.Serializable;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -70,5 +71,9 @@ public class CosmosDatabase implements Serializable {
             item.getChildren().add(cosmosContainer.generateView());
         });
         return item;
+    }
+
+    public Iterator<CosmosContainer> iterateContainers() {
+        return collections.values().iterator();
     }
 }
