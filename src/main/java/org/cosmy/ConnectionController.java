@@ -21,7 +21,6 @@ public class ConnectionController {
 
     @FXML
     public void createConnection(ActionEvent actionEvent) {
-        System.out.println("creating new connectin..");
         CosmosAccount account = new CosmosAccount(name.getText(), accountHost.getText(), accountKey.getText());
         try {
             ConnectionsContainer.getInstance().addConnection(account);

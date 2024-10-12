@@ -47,7 +47,6 @@ public class MainController {
         });
 
         modelRegistry = ObservableModelRegistryImpl.getInstance();
-        System.out.println("initializing controller..");
         TreeItem<String> accountRoot = new TreeItem<>("Accounts");
         modelRegistry.register(ACCOUNTS, accountRoot.getChildren());
         dbAccounts.setCellFactory(treeView -> {
@@ -87,7 +86,6 @@ public class MainController {
 
     @FXML
     public void createConnectioDialog(ActionEvent actionEvent) throws IOException {
-        System.out.println("crete new connection ..");
         Stage dialog = new Stage();
         dialog.setScene(new Scene(App.loadFXML("createConnectionDialog")));
         dialog.initOwner(App.mainStage);

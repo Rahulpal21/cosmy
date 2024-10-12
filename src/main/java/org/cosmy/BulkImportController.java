@@ -119,7 +119,6 @@ public class BulkImportController {
     }
 
     private void inspectOperationResponse(CosmosBulkOperationResponse<Object> operationResponse) {
-        System.out.println(operationResponse.getBatchContext().toString());
     }
 
     private boolean inputsAreValid() {
@@ -154,7 +153,6 @@ public class BulkImportController {
     }
 
     public void chooseFile(ActionEvent actionEvent) {
-        System.out.println("Open File");
         FileChooser fileChooser = new FileChooser();
         fileChooser.getExtensionFilters().addAll(
                 new FileChooser.ExtensionFilter("Text Files", "*.txt", "*.json")

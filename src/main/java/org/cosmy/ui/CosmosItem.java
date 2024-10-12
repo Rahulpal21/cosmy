@@ -1,4 +1,4 @@
-package org.cosmy.ui.tabs;
+package org.cosmy.ui;
 
 import javafx.scene.control.Label;
 

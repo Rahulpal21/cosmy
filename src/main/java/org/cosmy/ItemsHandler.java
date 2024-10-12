@@ -13,7 +13,7 @@ public class ItemsHandler {
     public void handle(String container, String database, String account) {
         Parent itemsTabPane = null;
         try {
-            FXMLLoader loader = new FXMLLoader(App.class.getResource( "itemTab.fxml"));
+            FXMLLoader loader = new FXMLLoader(App.class.getResource("itemTab.fxml"));
             loader.setController(new ItemTabController(ConnectionsContainer.getInstance().getConnection(account).getDatabase(database).getContainer(container)));
             itemsTabPane = loader.load();
 
@@ -26,8 +26,5 @@ public class ItemsHandler {
         IObservableModelRegistry modelRegistry = ObservableModelRegistryImpl.getInstance();
         ObservableList<Tab> tabsList = (ObservableList<Tab>) modelRegistry.lookup(ObservableModelKey.TABS);
         tabsList.add(first);
-
-//        ITab tab = new ItemsTab(ConnectionsContainer.getInstance().getConnection(account).getDatabase(database).getContainer(container));
-//        tab.initialize();
     }
 }
