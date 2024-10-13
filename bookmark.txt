@@ -1,4 +1,1 @@
-reimplement initialize and refresh to only initializee cosmosclient in accounts methhod.
-database and cntainer should only have refresh methtod
-account refresh will in turn call database and container refresh iteratively
-
+https://github.com/mkpaz/atlantafx?tab=MIT-1-ov-file#readme

@@ -1,10 +1,12 @@
 package org.cosmy;
 
 import com.azure.cosmos.CosmosAsyncContainer;
+import com.azure.cosmos.models.CosmosItemResponse;
 import com.azure.cosmos.models.PartitionKey;
 import com.azure.cosmos.models.SqlQuerySpec;
 import com.azure.cosmos.util.CosmosPagedFlux;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
@@ -17,10 +19,17 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import org.cosmy.model.CosmosContainer;
 import org.cosmy.model.ObservableModelKey;
-import org.cosmy.ui.predicates.MouseDoubleClickEvent;
 import org.cosmy.ui.CosmosItem;
+import org.cosmy.ui.predicates.MouseDoubleClickEvent;
+import reactor.core.publisher.Mono;
 
+import java.io.IOException;
+import java.io.Reader;
+import java.io.StringReader;
+import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
+import java.util.UUID;
 
 public class ItemTabController {
     private final CosmosContainer container;
@@ -53,6 +62,10 @@ public class ItemTabController {
     private Button saveItemButton;
     @FXML
     private Button deleteItemButton;
+    @FXML
+    private Button validateItemButton;
+    @FXML
+    private Button editItemButton;
 
     private ObjectMapper jsonPrinter;
 
@@ -78,38 +91,116 @@ public class ItemTabController {
             splitPane.setDividerPosition(0, 0.30);
         });
 
+        itemTextArea.textProperty().addListener((observableValue, oldVal, newVal) -> {
+            if (validateItemButton.isDisabled()) {
+                this.validateItemButton.setDisable(false);
+            }
+        });
         //set action handlers for buttons
-        deleteItemButton.setOnAction(event -> {
-            deleteItem(deleteItemButton.getUserData());
-        });
-        reloadItemsButton.setOnAction(event -> {
-            loadItems();
-        });
+        deleteItemButton.setOnAction(event -> deleteItem());
+        reloadItemsButton.setOnAction(event -> loadItems());
+        newItemButton.setOnAction(event -> newItem());
+        validateItemButton.setOnAction(event -> validateNewItemJson());
+        saveItemButton.setOnAction(event -> saveItem());
         loadItems();
     }
 
-    private void deleteItem(Object userData) {
-        CosmosItem item = (CosmosItem) userData;
+    private void saveItem() {
+        String itemText = this.itemTextArea.getText();
+        try(Reader reader = new StringReader(itemText)){
+            JsonNode jsonNode = jsonPrinter.readTree(reader);
+            Mono<CosmosItemResponse<JsonNode>> response = container.getAsyncContainer().createItem(jsonNode);
+            response.handle((createResponse, synchronousSink) -> {
+                //TODO handle diagnostic information if enabled through preferences
+            }).doOnSuccess(object -> {
+                //TODO success dialig or status bar/activity pane message
+            }).subscribe();
+        } catch (IOException e) {
+            showErrorDialog(e.getMessage());
+        }
+
+    }
+
+    private void validateNewItemJson() {
+        String input = this.itemTextArea.getText();
+        if (validateJson(input)) {
+            Platform.runLater(() -> this.saveItemButton.setDisable(false));
+        } else {
+            showErrorDialog("Json is not valid");
+        }
+    }
+
+    private boolean validateJson(String input) {
+        //TODO return error details
+        try (Reader stringReader = new StringReader(input)) {
+            this.jsonPrinter.readTree(stringReader);
+            return true;
+        } catch (IOException e) {
+            System.out.println(e.getMessage());
+            return false;
+        }
+    }
+
+    private void newItem() {
+        try {
+            String template = getNewItemTemplate();
+            //TODO combine all in one runnable for platform thread
+            Platform.runLater(() -> {
+                clearItemReadingPane();
+                disableDeleteButton();
+                this.itemTextArea.setText(template);
+                this.itemTextArea.setEditable(true);
+                this.validateItemButton.setDisable(true);
+            });
+
+
+        } catch (JsonProcessingException e) {
+            //TODO error dialog
+            System.out.println(e);
+        }
+    }
+
+    private String getNewItemTemplate() throws JsonProcessingException {
+        Map<String, String> itemTemplateAttributes = new HashMap<>(2);
+        itemTemplateAttributes.put("id", UUID.randomUUID().toString());
+        itemTemplateAttributes.put(container.getContainerDetails().getPartitionKeyPaths().getFirst().replace("/", ""), "<replace with actual value>");
+        return this.jsonPrinter.writeValueAsString(itemTemplateAttributes);
+    }
+
+    private void deleteItem() {
+        if (((Optional) this.deleteItemButton.getUserData()).isEmpty()) {
+            return;
+        }
+        CosmosItem item = (CosmosItem) ((Optional) this.deleteItemButton.getUserData()).get();
         container.getAsyncContainer().deleteItem(item.getItemId(), new PartitionKey(item.getPartitionKey())).doOnSuccess(objectCosmosItemResponse -> {
-            clearItemReadingPane();
-            removeItemFromListView(item);
-            disableDeleteButton();
+            clearItemReadingPaneOnPlatformThread();
+            removeItemFromListViewOnPlatformThread(item);
+            disableDeleteButtonOnPlatformThread();
         }).doOnError(throwable -> {
             //TODO error dialog
             System.out.println(throwable);
         }).subscribe();
     }
 
-    private void disableDeleteButton() {
-        Platform.runLater(() -> this.deleteItemButton.setDisable(true));
+    private void disableDeleteButtonOnPlatformThread() {
+        Platform.runLater(this::disableDeleteButton);
     }
 
-    private void removeItemFromListView(CosmosItem item) {
+    private void disableDeleteButton() {
+        this.deleteItemButton.setDisable(true);
+        this.deleteItemButton.setUserData(Optional.ofNullable(null));
+    }
+
+    private void removeItemFromListViewOnPlatformThread(CosmosItem item) {
         Platform.runLater(() -> itemListView.getItems().remove(item));
     }
 
+    private void clearItemReadingPaneOnPlatformThread() {
+        Platform.runLater(this::clearItemReadingPane);
+    }
+
     private void clearItemReadingPane() {
-        Platform.runLater(() -> itemTextArea.clear());
+        itemTextArea.clear();
     }
 
     public void loadItems() {
@@ -145,7 +236,12 @@ public class ItemTabController {
         asyncContainer.readItem(item.getItemId(), new PartitionKey(item.getPartitionKey()), Map.class).handle((response, synchronousSink1) -> {
             try {
                 String asString = jsonPrinter.writeValueAsString(response.getItem());
-                Platform.runLater(() -> itemTextArea.setText(asString));
+                Platform.runLater(() -> {
+                    itemTextArea.setText(asString);
+                    itemTextArea.setEditable(false);
+                    validateItemButton.setDisable(true);
+                    saveItemButton.setDisable(true);
+                });
                 enableDeleteButton();
                 // TODO
             } catch (JsonProcessingException e) {
@@ -165,7 +261,17 @@ public class ItemTabController {
     }
 
     private void contextualizeButtons(CosmosItem item) {
-        this.deleteItemButton.setUserData(item);
+        this.deleteItemButton.setUserData(Optional.ofNullable(item));
+    }
+
+    public void showErrorDialog(String errorMessage) {
+        //TODO take error dialog to a common utility across whole project
+        Dialog<String> dialog = new Dialog<>();
+        dialog.setTitle("Error");
+        ButtonType okButton = new ButtonType("Ok", ButtonBar.ButtonData.OK_DONE);
+        dialog.setContentText(errorMessage);
+        dialog.getDialogPane().getButtonTypes().add(okButton);
+        dialog.showAndWait();
     }
 
 }
