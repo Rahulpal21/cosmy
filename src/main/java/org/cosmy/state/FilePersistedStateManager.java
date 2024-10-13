@@ -1,13 +1,27 @@
 package org.cosmy.state;
 
+import org.cosmy.ObservableModelRegistryImpl;
+
 import java.io.*;
 import java.nio.file.Path;
 
 public class FilePersistedStateManager implements IPersistedStateManager {
 
-    private File baseDirectory;
+    private final File baseDirectory;
+    private static FilePersistedStateManager instance;
 
-    public FilePersistedStateManager() {
+    public static synchronized IPersistedStateManager getInstance() {
+        if (instance == null) {
+            synchronized (FilePersistedStateManager.class) {
+                if (instance == null) {
+                    instance = new FilePersistedStateManager();
+                }
+            }
+        }
+        return instance;
+    }
+
+    private FilePersistedStateManager() {
         String userHomePath = System.getProperty("user.home");
         System.out.println("user home is set to " + userHomePath);
         baseDirectory = Path.of(userHomePath, ".cosmy").toFile();

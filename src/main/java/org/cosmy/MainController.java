@@ -1,7 +1,6 @@
 package org.cosmy;
 
 import javafx.event.ActionEvent;
-import javafx.event.EventType;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.Scene;
@@ -30,11 +29,6 @@ public class MainController {
 
     @FXML
     private VBox vBox;
-
-    @FXML
-    private void switchToSecondary() throws IOException {
-        App.setRoot("layout");
-    }
 
     private IObservableModelRegistry modelRegistry;
     private ItemsHandler itemsHandler = new ItemsHandler();
@@ -96,6 +90,14 @@ public class MainController {
     public void bulkImportDialog(ActionEvent actionEvent) throws IOException {
         Stage dialog = new Stage();
         dialog.setScene(new Scene(App.loadFXML("bulkImportDialog")));
+        dialog.initOwner(App.mainStage);
+        dialog.initModality(Modality.APPLICATION_MODAL);
+        dialog.showAndWait();
+    }
+
+    public void preferencesDialog(ActionEvent event) throws IOException {
+        Stage dialog = new Stage();
+        dialog.setScene(new Scene(App.loadFXML("preferencesDialog")));
         dialog.initOwner(App.mainStage);
         dialog.initModality(Modality.APPLICATION_MODAL);
         dialog.showAndWait();

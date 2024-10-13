@@ -27,7 +27,8 @@ public class ConnectionsContainer {
 
     public ConnectionsContainer() {
         this.connections = new ConcurrentHashMap<>();
-        this.stateManager = new FilePersistedStateManager();
+        this.stateManager = FilePersistedStateManager.getInstance();
+
         restore();
     }
 

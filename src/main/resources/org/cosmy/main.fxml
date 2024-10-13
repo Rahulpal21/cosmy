@@ -25,7 +25,7 @@
                     <items>
                         <MenuItem mnemonicParsing="false" onAction="#createConnectioDialog" text="New Connection"/>
                         <MenuItem mnemonicParsing="false" onAction="#bulkImportDialog" text="Bulk Import"/>
-                        <MenuItem mnemonicParsing="false" text="Settings"/>
+                        <MenuItem mnemonicParsing="false" onAction="#preferencesDialog" text="Preferences"/>
                         <MenuItem mnemonicParsing="false" text="About Cosmy"/>
                         <MenuItem mnemonicParsing="false" text="Quit"/>
                     </items>

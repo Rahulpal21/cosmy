@@ -1,1 +1,9 @@
 https://github.com/mkpaz/atlantafx?tab=MIT-1-ov-file#readme
+
+https://github.com/effad/ValidatorFX
+
+Custom controls: https://controlsfx.github.io/
+
+icon packs: https://github.com/kordamp/ikonli/tree/master
+
+bytecode editor: https://github.com/Col-E/Recaf
