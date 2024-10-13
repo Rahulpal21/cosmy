@@ -102,18 +102,26 @@ public class ItemTabController {
         newItemButton.setOnAction(event -> newItem());
         validateItemButton.setOnAction(event -> validateNewItemJson());
         saveItemButton.setOnAction(event -> saveItem());
+        editItemButton.setOnAction(event -> editItem());
         loadItems();
+    }
+
+    private void editItem() {
+        itemTextArea.setEditable(true);
     }
 
     private void saveItem() {
         String itemText = this.itemTextArea.getText();
         try(Reader reader = new StringReader(itemText)){
             JsonNode jsonNode = jsonPrinter.readTree(reader);
-            Mono<CosmosItemResponse<JsonNode>> response = container.getAsyncContainer().createItem(jsonNode);
+            Mono<CosmosItemResponse<JsonNode>> response = container.getAsyncContainer().upsertItem(jsonNode);
             response.handle((createResponse, synchronousSink) -> {
                 //TODO handle diagnostic information if enabled through preferences
+                System.out.println(createResponse.getStatusCode());
             }).doOnSuccess(object -> {
                 //TODO success dialig or status bar/activity pane message
+            }).doOnError(throwable -> {
+                showErrorDialog(throwable.getMessage());
             }).subscribe();
         } catch (IOException e) {
             showErrorDialog(e.getMessage());
@@ -241,6 +249,7 @@ public class ItemTabController {
                     itemTextArea.setEditable(false);
                     validateItemButton.setDisable(true);
                     saveItemButton.setDisable(true);
+                    editItemButton.setDisable(false);
                 });
                 enableDeleteButton();
                 // TODO
