@@ -11,6 +11,7 @@
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 
+<?import javafx.scene.control.TextField?>
 <TabPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" tabClosingPolicy="UNAVAILABLE" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1">
     <tabs>
         <Tab id="uniqueTabName" text="">
@@ -24,10 +25,11 @@
                                         <ToolBar prefHeight="40.0" prefWidth="200.0" VBox.vgrow="NEVER">
                                             <items>
                                                 <Button fx:id="reloadItemsButton" mnemonicParsing="false" text="Reload" />
-                                                <Button fx:id="filterItemsButton" mnemonicParsing="false" text="Filter" />
+                                                <Button fx:id="clearFilterButton" mnemonicParsing="false" text="Clear" />
                                             </items>
                                         </ToolBar>
-                                        <ListView id="itemList" fx:id="itemListView" accessibleHelp="this is accessible help" accessibleText="This is accessible text" VBox.vgrow="ALWAYS" />
+                                        <TextField text="SELECT * FROM WHERE" editable="false" fx:id="filterQuery" VBox.vgrow="NEVER"/>
+                                        <ListView id="itemList" fx:id="itemListView" accessibleText="This is accessible text" VBox.vgrow="ALWAYS" />
                                         <ToolBar prefHeight="40.0" prefWidth="200.0" VBox.vgrow="NEVER">
                                             <items>
                                                 <Button fx:id="prevPageButton" disable="true" mnemonicParsing="false" text="Prev" />

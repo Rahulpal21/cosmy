@@ -12,6 +12,7 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import javafx.application.Platform;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
 import javafx.event.EventType;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
@@ -30,12 +31,11 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class ItemTabController {
     private final CosmosContainer container;
     private final String tabName;
-    //set name
-    //set id
     @FXML
     private SplitPane splitPane;
     @FXML
@@ -51,7 +51,7 @@ public class ItemTabController {
     @FXML
     private Button reloadItemsButton;
     @FXML
-    private Button filterItemsButton;
+    private Button clearFilterButton;
     @FXML
     private Button prevPageButton;
     @FXML
@@ -66,8 +66,12 @@ public class ItemTabController {
     private Button validateItemButton;
     @FXML
     private Button editItemButton;
+    @FXML
+    private TextField filterQuery;
 
     private ObjectMapper jsonPrinter;
+    private String filterString;
+    private AtomicBoolean filterSet = new AtomicBoolean(false);
 
     public ItemTabController(CosmosContainer container) {
         this.container = container;
@@ -103,7 +107,48 @@ public class ItemTabController {
         validateItemButton.setOnAction(event -> validateNewItemJson());
         saveItemButton.setOnAction(event -> saveItem());
         editItemButton.setOnAction(event -> editItem());
+        clearFilterButton.setOnAction(event -> {
+            clearFilter();
+        });
+        filterQuery.setOnMouseClicked(mouseEvent -> {
+            if (!filterSet.get()) {
+                filterQuery.clear();
+                filterQuery.setEditable(true);
+            }
+        });
+        filterQuery.setOnAction(event -> {
+            if (event.getEventType().equals(ActionEvent.ACTION)) {
+                setFilterString();
+            }
+        });
         loadItems();
+    }
+
+    private void clearFilter() {
+        this.filterQuery.clear();
+        this.filterQuery.setText("SELECT * FROM c WHERE");
+        this.filterQuery.setEditable(false);
+        this.filterString = null;
+        this.filterSet.set(false);
+        loadItems();
+    }
+
+    private void setFilterString() {
+        if (validateFilterString(this.filterQuery.getText())) {
+            this.filterString = this.filterQuery.getText();
+            filterSet.set(true);
+            loadItems();
+        }
+
+
+    }
+
+    private boolean validateFilterString(String filterString) {
+        if (filterString != null && !filterString.isEmpty()) {
+            // TODD filter query validation rules
+            return true;
+        }
+        return false;
     }
 
     private void editItem() {
@@ -112,7 +157,7 @@ public class ItemTabController {
 
     private void saveItem() {
         String itemText = this.itemTextArea.getText();
-        try(Reader reader = new StringReader(itemText)){
+        try (Reader reader = new StringReader(itemText)) {
             JsonNode jsonNode = jsonPrinter.readTree(reader);
             Mono<CosmosItemResponse<JsonNode>> response = container.getAsyncContainer().upsertItem(jsonNode);
             response.handle((createResponse, synchronousSink) -> {
@@ -215,6 +260,9 @@ public class ItemTabController {
         String pKeyPath = container.getContainerDetails().getPartitionKeyPaths().getFirst();
         String pKeyAttr = pKeyPath.replace("/", "");
         String readAllQuery = "SELECT c.id, c." + pKeyAttr + " FROM c";
+        if (filterSet.get()) {
+            readAllQuery = readAllQuery.concat(" WHERE ").concat(filterString);
+        }
         SqlQuerySpec querySpec = new SqlQuerySpec(readAllQuery);
         CosmosPagedFlux<Map> pagedFlux = container.getAsyncContainer().queryItems(querySpec, Map.class);
         this.itemListView.getItems().clear();
