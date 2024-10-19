@@ -3,6 +3,10 @@ module org.cosmy.example {
     requires javafx.controls;
     requires com.azure.cosmos;
     requires jdk.compiler;
+    requires org.kordamp.ikonli.core;
+    requires org.kordamp.ikonli.javafx;
+    requires org.kordamp.ikonli.material2;
+
     opens org.cosmy to javafx.fxml;
     exports org.cosmy;
     exports org.cosmy.model;

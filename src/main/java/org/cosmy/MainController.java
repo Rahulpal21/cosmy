@@ -11,9 +11,9 @@ import javafx.scene.text.Text;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import org.cosmy.model.ObservableModelKey;
+import org.kordamp.ikonli.javafx.FontIcon;
 
 import java.io.IOException;
-
 import static org.cosmy.model.ObservableModelKey.ACCOUNTS;
 
 public class MainController {
@@ -41,8 +41,14 @@ public class MainController {
         });
 
         modelRegistry = ObservableModelRegistryImpl.getInstance();
+        FontIcon icon = new FontIcon("mdomz-supervisor_account");
+
         TreeItem<String> accountRoot = new TreeItem<>("Accounts");
+        accountRoot.setGraphic(icon);
+        accountRoot.getGraphic().setVisible(true);
+
         modelRegistry.register(ACCOUNTS, accountRoot.getChildren());
+
         dbAccounts.setCellFactory(treeView -> {
             TreeCell<String> cell = new TreeCell<>() {
                 @Override

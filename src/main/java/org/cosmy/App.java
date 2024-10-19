@@ -27,7 +27,7 @@ public class App extends Application {
         scene = new Scene(loadFXML("main"));
         mainStage = stage;
         stage.setScene(scene);
-        stage.getIcons().add(new Image(this.getClass().getResourceAsStream("/icons/telescope.png")));
+        stage.getIcons().add(new Image(Objects.requireNonNull(this.getClass().getResourceAsStream("/icons/telescope.png"))));
         stage.setIconified(true);
         stage.setTitle("Cosmy");
 
