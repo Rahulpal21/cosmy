@@ -11,5 +11,16 @@ https://github.com/effad/ValidatorFX
 Custom controls: https://controlsfx.github.io/
 
 icon packs: https://github.com/kordamp/ikonli/tree/master
+https://kordamp.org/ikonli/cheat-sheet-feather.html
+https://kordamp.org/ikonli/cheat-sheet-icomoon.html
+https://kordamp.org/ikonli/cheat-sheet-jamicons.html
+https://kordamp.org/ikonli/cheat-sheet-material2.html
+https://kordamp.org/ikonli/cheat-sheet-materialdesign2.html
+scope >> https://kordamp.org/ikonli/cheat-sheet-octicons.html
+accounts >> https://kordamp.org/ikonli/cheat-sheet-remixicon.html
+https://kordamp.org/ikonli/cheat-sheet-themify.html
+https://kordamp.org/ikonli/cheat-sheet-antdesignicons.html#_outlined_boxiconsoutlined
+https://kordamp.org/ikonli/cheat-sheet-dashicons.html
+https://kordamp.org/ikonli/cheat-sheet-simpleicons.html
 
 bytecode editor: https://github.com/Col-E/Recaf

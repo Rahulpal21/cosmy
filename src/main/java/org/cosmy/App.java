@@ -6,10 +6,12 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.TreeItem;
+import javafx.scene.image.Image;
 import javafx.stage.Stage;
 import org.cosmy.model.ObservableModelKey;
 
 import java.io.IOException;
+import java.util.Objects;
 
 /**
  * JavaFX App
@@ -21,9 +23,14 @@ public class App extends Application {
 
     @Override
     public void start(Stage stage) throws IOException {
-        scene = new Scene(loadFXML("main"), 640, 480);
+//        scene = new Scene(loadFXML("main"), 640, 480);
+        scene = new Scene(loadFXML("main"));
         mainStage = stage;
         stage.setScene(scene);
+        stage.getIcons().add(new Image(this.getClass().getResourceAsStream("/icons/telescope.png")));
+        stage.setIconified(true);
+        stage.setTitle("Cosmy");
+
         stage.setOnCloseRequest(windowEvent -> {
             try {
                 ConnectionsContainer.getInstance().persist();
