@@ -71,6 +71,15 @@ public class MainController {
                     }
                 }
             });
+            cell.setOnKeyReleased(keyEvent -> {
+                //TODO investigate enter event on items cell
+                System.out.println(keyEvent);
+            });
+            cell.setOnKeyPressed(keyEvent -> {
+                //TODO investigate enter event on items cell
+                System.out.println(keyEvent);
+            });
+
             return cell;
         });
 

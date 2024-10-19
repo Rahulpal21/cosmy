@@ -28,12 +28,13 @@ public class PreferencesController {
 
     @FXML
     private void initialize() {
-        try {
+        preferencesBean = Preferences.getInstance();
+        /*try {
             preferencesBean = (Preferences) stateManager.load(Preferences.class);
         } catch (IOException | ClassNotFoundException e) {
             System.out.println(e.getMessage());
             preferencesBean = new Preferences();
-        }
+        }*/
 
         try {
             pageLengthBinding = JavaBeanIntegerPropertyBuilder.create().bean(preferencesBean).beanClass(Preferences.class).name("pageLength").build();

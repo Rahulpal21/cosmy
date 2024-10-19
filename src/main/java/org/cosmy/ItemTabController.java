@@ -1,9 +1,7 @@
 package org.cosmy;
 
 import com.azure.cosmos.CosmosAsyncContainer;
-import com.azure.cosmos.models.CosmosItemResponse;
-import com.azure.cosmos.models.PartitionKey;
-import com.azure.cosmos.models.SqlQuerySpec;
+import com.azure.cosmos.models.*;
 import com.azure.cosmos.util.CosmosPagedFlux;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -11,6 +9,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import javafx.application.Platform;
+import javafx.beans.property.adapter.JavaBeanBooleanProperty;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventType;
@@ -22,6 +21,7 @@ import org.cosmy.model.CosmosContainer;
 import org.cosmy.model.ObservableModelKey;
 import org.cosmy.ui.CosmosItem;
 import org.cosmy.ui.predicates.MouseDoubleClickEvent;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.io.IOException;
@@ -69,9 +69,12 @@ public class ItemTabController {
     @FXML
     private TextField filterQuery;
 
+    private PaginationContext paginationContext;
+
     private ObjectMapper jsonPrinter;
     private String filterString;
     private AtomicBoolean filterSet = new AtomicBoolean(false);
+    private JavaBeanBooleanProperty nextButtonBinding;
 
     public ItemTabController(CosmosContainer container) {
         this.container = container;
@@ -80,6 +83,8 @@ public class ItemTabController {
         this.jsonPrinter = new ObjectMapper();
         this.jsonPrinter.registerModule(new JavaTimeModule());
         this.jsonPrinter.enable(SerializationFeature.INDENT_OUTPUT, SerializationFeature.FLUSH_AFTER_WRITE_VALUE);
+
+        paginationContext = new PaginationContext();
     }
 
     private String generateTabName(CosmosContainer container) {
@@ -102,7 +107,7 @@ public class ItemTabController {
         });
         //set action handlers for buttons
         deleteItemButton.setOnAction(event -> deleteItem());
-        reloadItemsButton.setOnAction(event -> loadItems());
+        reloadItemsButton.setOnAction(event -> loadItems(Optional.empty()));
         newItemButton.setOnAction(event -> newItem());
         validateItemButton.setOnAction(event -> validateNewItemJson());
         saveItemButton.setOnAction(event -> saveItem());
@@ -121,7 +126,39 @@ public class ItemTabController {
                 setFilterString();
             }
         });
-        loadItems();
+
+        prevPageButton.setOnAction(event -> {
+            String prevContinuationToken = paginationContext.getPrevContinuationToken();
+            if (prevContinuationToken != null && !prevContinuationToken.isEmpty()) {
+                loadItems(Optional.of(prevContinuationToken));
+                nextPageButton.setDisable(false);
+            } else {
+                loadItems(Optional.empty());
+                prevPageButton.setDisable(true);
+            }
+        });
+
+        nextPageButton.setOnAction(event -> {
+            String continuationToken = paginationContext.getContinuationToken();
+            if (continuationToken != null && !continuationToken.isEmpty()) {
+                loadItems(Optional.of(continuationToken));
+                nextPageButton.setDisable(false);
+            } else {
+                loadItems(Optional.empty());
+                prevPageButton.setDisable(true);
+            }
+            loadItems(Optional.empty());
+        });
+
+        //bindings for pagination buttons
+//        try {
+//            nextButtonBinding = JavaBeanBooleanPropertyBuilder.create().bean(paginationContext).beanClass(PaginationContext.class).name("nextButtonDisabled").build();
+//            nextPageButton.disableProperty().bind(nextButtonBinding);
+//        } catch (NoSuchMethodException e) {
+//            System.out.println(e);
+//        }
+
+        loadItems(Optional.empty());
     }
 
     private void clearFilter() {
@@ -130,17 +167,21 @@ public class ItemTabController {
         this.filterQuery.setEditable(false);
         this.filterString = null;
         this.filterSet.set(false);
-        loadItems();
+        clearPaginationContext();
+        loadItems(Optional.empty());
+    }
+
+    private void clearPaginationContext() {
+        this.paginationContext.clear();
     }
 
     private void setFilterString() {
         if (validateFilterString(this.filterQuery.getText())) {
             this.filterString = this.filterQuery.getText();
             filterSet.set(true);
-            loadItems();
+            clearPaginationContext();
+            loadItems(Optional.empty());
         }
-
-
     }
 
     private boolean validateFilterString(String filterString) {
@@ -256,7 +297,7 @@ public class ItemTabController {
         itemTextArea.clear();
     }
 
-    public void loadItems() {
+    public void loadItems(Optional<String> continuationToken) {
         String pKeyPath = container.getContainerDetails().getPartitionKeyPaths().getFirst();
         String pKeyAttr = pKeyPath.replace("/", "");
         String readAllQuery = "SELECT c.id, c." + pKeyAttr + " FROM c";
@@ -266,15 +307,38 @@ public class ItemTabController {
         SqlQuerySpec querySpec = new SqlQuerySpec(readAllQuery);
         CosmosPagedFlux<Map> pagedFlux = container.getAsyncContainer().queryItems(querySpec, Map.class);
         this.itemListView.getItems().clear();
-        pagedFlux.handle((map, synchronousSink) -> {
-            CosmosItem item = new CosmosItem(map.get(pKeyAttr), (String) map.get("id"));
-            item.addEventHandler(EventType.ROOT, event -> {
-                if (MouseDoubleClickEvent.evaluate(event)) {
-                    CosmosItem source = (CosmosItem) event.getSource();
-                    loadItem(source, container);
-                }
+
+        Flux<FeedResponse<Map>> responsePage = null;
+
+        if (continuationToken.isEmpty()) {
+            responsePage = pagedFlux.byPage(paginationContext.getPreferredPageLength());
+        } else {
+            responsePage = pagedFlux.byPage(continuationToken.get(), paginationContext.getPreferredPageLength());
+        }
+
+        responsePage.take(1).handle((page, synchronousSink) -> {
+            page.getElements().stream().forEach(map -> {
+                CosmosItem item = new CosmosItem(map.get(pKeyAttr), (String) map.get("id"));
+                item.addEventHandler(EventType.ROOT, event -> {
+                    if (MouseDoubleClickEvent.evaluate(event)) {
+                        CosmosItem source = (CosmosItem) event.getSource();
+                        loadItem(source, container);
+                    }
+                });
+                Platform.runLater(() -> this.itemListView.getItems().add(item));
             });
-            Platform.runLater(() -> this.itemListView.getItems().add(item));
+
+            //set pagination details for next page
+            if (page.getContinuationToken() == null || "".equalsIgnoreCase(page.getContinuationToken())) {
+                System.out.println("continuation token is null !!");
+//                paginationContext.setNextButtonDisabled(true);
+                nextPageButton.setDisable(true);
+            } else {
+                paginationContext.setContinuationToken(page.getContinuationToken());
+                paginationContext.setNextButtonDisabled(false);
+                nextPageButton.setDisable(false);
+                prevPageButton.setDisable(false);
+            }
 
         }).doFinally(signalType -> {
             progressBar.setVisible(false);

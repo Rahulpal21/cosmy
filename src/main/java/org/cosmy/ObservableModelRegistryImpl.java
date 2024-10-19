@@ -21,7 +21,7 @@ public class ObservableModelRegistryImpl implements IObservableModelRegistry {
         return instance;
     }
 
-    public ObservableModelRegistryImpl() {
+    private ObservableModelRegistryImpl() {
         registry = new ConcurrentHashMap<>();
     }
 
