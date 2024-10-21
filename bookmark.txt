@@ -24,3 +24,7 @@ https://kordamp.org/ikonli/cheat-sheet-dashicons.html
 https://kordamp.org/ikonli/cheat-sheet-simpleicons.html
 
 bytecode editor: https://github.com/Col-E/Recaf
+
+
+json schema validation against schema https://github.com/erosb/json-sKema
+rich text library for text area https://github.com/FXMisc/RichTextFX
