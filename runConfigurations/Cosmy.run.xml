@@ -1,0 +1,10 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="Cosmy" type="Application" factoryName="Application">
+    <option name="MAIN_CLASS_NAME" value="org.cosmy.App" />
+    <module name="cosmy" />
+    <option name="VM_PARAMETERS" value="-Djavax.net.ssl.trustStore=keystore.jks -Djavax.net.ssl.trustStorePassword=changeit" />
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>

@@ -1,4 +1,4 @@
 download base64 encoded certificate chain from browser
 
-keytool -importcert -file .\localhost.crt -keystore keystore.jks -alias "emulator"
+keytool -importcert -file ./localhost.crt -keystore keystore.jks -alias "emulator"
 pwd changeit
