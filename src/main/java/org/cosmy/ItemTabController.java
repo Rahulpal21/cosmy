@@ -1,7 +1,10 @@
 package org.cosmy;
 
 import com.azure.cosmos.CosmosAsyncContainer;
-import com.azure.cosmos.models.*;
+import com.azure.cosmos.models.CosmosItemResponse;
+import com.azure.cosmos.models.FeedResponse;
+import com.azure.cosmos.models.PartitionKey;
+import com.azure.cosmos.models.SqlQuerySpec;
 import com.azure.cosmos.util.CosmosPagedFlux;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -19,6 +22,7 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import org.cosmy.model.CosmosContainer;
 import org.cosmy.model.ObservableModelKey;
+import org.cosmy.spec.IController;
 import org.cosmy.ui.CosmosItem;
 import org.cosmy.ui.predicates.MouseDoubleClickEvent;
 import reactor.core.publisher.Flux;
@@ -33,7 +37,7 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-public class ItemTabController {
+public class ItemTabController implements IController {
     private final CosmosContainer container;
     private final String tabName;
     @FXML
