@@ -1,4 +1,4 @@
-package org.cosmy;
+package org.cosmy.context;
 
 import javafx.beans.Observable;
 import org.cosmy.model.ObservableModelKey;

@@ -1,7 +1,5 @@
 package org.cosmy.state;
 
-import org.cosmy.ObservableModelRegistryImpl;
-
 import java.io.*;
 import java.nio.file.Path;
 

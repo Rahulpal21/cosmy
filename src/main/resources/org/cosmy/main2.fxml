@@ -38,10 +38,7 @@
                 <AnchorPane>
                     <children>
                         <VBox prefHeight="551.0" prefWidth="222.0" AnchorPane.bottomAnchor="0.0"
-                              AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-                            <children>
-                                <TreeView fx:id="dbAccounts" prefHeight="200.0" prefWidth="200.0"/>
-                            </children>
+                              AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" fx:id="accountPaneVBox">
                         </VBox>
                     </children>
                 </AnchorPane>

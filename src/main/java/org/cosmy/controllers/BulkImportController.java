@@ -1,4 +1,4 @@
-package org.cosmy;
+package org.cosmy.controllers;
 
 import com.azure.cosmos.CosmosAsyncContainer;
 import com.azure.cosmos.models.CosmosBulkOperationResponse;
@@ -15,6 +15,7 @@ import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import org.cosmy.context.ConnectionsContainer;
 import org.cosmy.model.CosmosContainer;
 import reactor.core.publisher.Flux;
 

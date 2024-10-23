@@ -1,4 +1,4 @@
-package org.cosmy;
+package org.cosmy.context;
 
 import org.cosmy.model.CosmosAccount;
 import org.cosmy.state.FilePersistedStateManager;
