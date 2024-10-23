@@ -22,14 +22,14 @@ import org.kordamp.ikonli.javafx.FontIcon;
 import java.io.IOException;
 
 /// @author Rahul Pal
-public class TreeViewPane implements IVisualElement {
+public class AccountsPane implements IVisualElement {
 
     private TreeView treeView;
     private final IController controller;
     private final ItemsHandler itemsHandler;
     private final IObservableModelRegistry modelRegistry;
 
-    public TreeViewPane() {
+    public AccountsPane() {
         controller = new AccountsViewController();
         modelRegistry = ObservableModelRegistryImpl.getInstance();
         itemsHandler = new ItemsHandler();
@@ -142,5 +142,10 @@ public class TreeViewPane implements IVisualElement {
             });
             account.setAccountRefreshed(true);
         }
+    }
+
+    public void acceptNewAccount(CosmosAccount account) {
+        ObservableList<TreeItem<String>> accounts = (ObservableList<TreeItem<String>>) ObservableModelRegistryImpl.getInstance().lookup(ObservableModelKey.ACCOUNTS);
+        accounts.add(generateEmptyCollapsedView(account));
     }
 }

@@ -13,8 +13,6 @@ module org.cosmy.example {
     opens org.cosmy.model to javafx.fxml;
     exports org.cosmy.ui;
     opens org.cosmy.ui to javafx.fxml;
-    exports org.cosmy.interactions;
-    opens org.cosmy.interactions to javafx.fxml;
     exports org.cosmy.controllers;
     opens org.cosmy.controllers to javafx.fxml;
     exports org.cosmy.context;

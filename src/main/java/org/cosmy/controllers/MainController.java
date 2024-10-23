@@ -9,10 +9,11 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import org.cosmy.App;
+import org.cosmy.context.AppContext;
 import org.cosmy.context.IObservableModelRegistry;
 import org.cosmy.context.ObservableModelRegistryImpl;
 import org.cosmy.model.ObservableModelKey;
-import org.cosmy.view.TreeViewPane;
+import org.cosmy.view.AccountsPane;
 
 import java.io.IOException;
 
@@ -41,8 +42,9 @@ public class MainController {
 
         modelRegistry = ObservableModelRegistryImpl.getInstance();
 
-        TreeViewPane accountsPane = new TreeViewPane();
+        AccountsPane accountsPane = new AccountsPane();
         accountsPane.initialize();
+        AppContext.getInstance().setAccountsPane(accountsPane);
         accountPaneVBox.getChildren().add(accountsPane.getTreeView());
         modelRegistry.register(ObservableModelKey.TABS, tabs.getTabs());
     }
