@@ -1,14 +1,12 @@
 package org.cosmy;
 
 import javafx.application.Application;
-import javafx.collections.ObservableList;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.TreeItem;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
-import org.cosmy.model.ObservableModelKey;
+import org.cosmy.context.ConnectionsContainer;
 
 import java.io.IOException;
 import java.util.Objects;
@@ -16,6 +14,7 @@ import java.util.Objects;
 /**
  * JavaFX App
  */
+/// @author Rahul Pal
 public class App extends Application {
 
     public static Scene scene;
@@ -23,7 +22,6 @@ public class App extends Application {
 
     @Override
     public void start(Stage stage) throws IOException {
-//        scene = new Scene(loadFXML("main"), 640, 480);
         scene = new Scene(loadFXML("main2"));
         mainStage = stage;
         stage.setScene(scene);
@@ -39,7 +37,6 @@ public class App extends Application {
             }
         });
         stage.show();
-//        restore(scene);
     }
 
     static void setRoot(String fxml) throws IOException {
@@ -61,11 +58,4 @@ public class App extends Application {
         launch();
     }
 
-    /*public void restore(Scene scene){
-        ObservableList<TreeItem<String>> accounts = (ObservableList<TreeItem<String>>) ObservableModelRegistryImpl.getInstance().lookup(ObservableModelKey.ACCOUNTS);
-        ConnectionsContainer.getInstance().iterateAccounts().forEachRemaining(cosmosAccount -> {
-            TreeItem<String> item = AccountViewGenerators.generateEmptyCollapsedView(cosmosAccount);
-            accounts.add(item);
-        });
-    }*/
 }

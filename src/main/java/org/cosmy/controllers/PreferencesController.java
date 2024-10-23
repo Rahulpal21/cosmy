@@ -1,4 +1,4 @@
-package org.cosmy;
+package org.cosmy.controllers;
 
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.adapter.JavaBeanIntegerProperty;
@@ -11,8 +11,6 @@ import javafx.util.StringConverter;
 import org.cosmy.model.Preferences;
 import org.cosmy.state.FilePersistedStateManager;
 import org.cosmy.state.IPersistedStateManager;
-
-import java.io.IOException;
 
 public class PreferencesController {
     @FXML

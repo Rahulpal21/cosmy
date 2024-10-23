@@ -1,4 +1,4 @@
-package org.cosmy;
+package org.cosmy.controllers;
 
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -6,6 +6,8 @@ import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TreeItem;
+import org.cosmy.context.ConnectionsContainer;
+import org.cosmy.context.ObservableModelRegistryImpl;
 import org.cosmy.model.CosmosAccount;
 import org.cosmy.model.ObservableModelKey;
 

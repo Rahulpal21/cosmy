@@ -1,14 +1,16 @@
 package org.cosmy.view;
 
 import javafx.collections.ObservableList;
-import javafx.scene.Node;
+import javafx.event.EventType;
 import javafx.scene.control.TreeCell;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
-import javafx.scene.input.MouseEvent;
-import javafx.scene.text.Text;
-import org.cosmy.*;
-import org.cosmy.controllers.TreeViewPaneController;
+import org.cosmy.context.ConnectionsContainer;
+import org.cosmy.context.IObservableModelRegistry;
+import org.cosmy.context.ObservableModelRegistryImpl;
+import org.cosmy.controllers.AccountsViewController;
+import org.cosmy.controllers.ItemsHandler;
+import org.cosmy.model.CosmosAccount;
 import org.cosmy.model.ObservableModelKey;
 import org.cosmy.spec.CosmyException;
 import org.cosmy.spec.IController;
@@ -28,7 +30,7 @@ public class TreeViewPane implements IVisualElement {
     private final IObservableModelRegistry modelRegistry;
 
     public TreeViewPane() {
-        controller = new TreeViewPaneController();
+        controller = new AccountsViewController();
         modelRegistry = ObservableModelRegistryImpl.getInstance();
         itemsHandler = new ItemsHandler();
     }
@@ -69,22 +71,8 @@ public class TreeViewPane implements IVisualElement {
                     }
                 }
             };
-            cell.setOnMouseClicked(mouseEvent -> {
-                Node interactedNode = mouseEvent.getPickResult().getIntersectedNode();
-                if (mouseEvent.getEventType() == MouseEvent.MOUSE_CLICKED && mouseEvent.getClickCount() == 2 && interactedNode instanceof Text) {
-                    Text node = (Text) interactedNode;
-                    String nodeName = node.getText();
-                    if (nodeName.equalsIgnoreCase("Items")) {
-                        if (node.getParent() instanceof TreeCell) {
-                            TreeItem<String> treeItem = ((TreeCell<String>) node.getParent()).getTreeItem();
-                            TreeItem<String> container = treeItem.getParent();
-                            TreeItem<String> database = container.getParent();
-                            TreeItem<String> account = database.getParent();
-                            new ItemsTab(ConnectionsContainer.getInstance().getConnection(account.getValue()).getDatabase(database.getValue()).getContainer(container.getValue())).initialize();
-                        }
-                    }
-                }
-            });
+            cell.setOnMouseClicked(AccountsViewController::launchItemsTab);
+
             cell.setOnKeyReleased(keyEvent -> {
                 //TODO investigate enter event on items cell
                 System.out.println(keyEvent);
@@ -103,7 +91,7 @@ public class TreeViewPane implements IVisualElement {
     public void restore() {
         ObservableList<TreeItem<String>> accounts = (ObservableList<TreeItem<String>>) ObservableModelRegistryImpl.getInstance().lookup(ObservableModelKey.ACCOUNTS);
         ConnectionsContainer.getInstance().iterateAccounts().forEachRemaining(cosmosAccount -> {
-            TreeItem<String> item = AccountViewGenerators.generateEmptyCollapsedView(cosmosAccount);
+            TreeItem<String> item = generateEmptyCollapsedView(cosmosAccount);
             accounts.add(item);
         });
     }
@@ -126,5 +114,33 @@ public class TreeViewPane implements IVisualElement {
 
     public TreeView getTreeView() {
         return treeView;
+    }
+
+    public static TreeItem<String> generateEmptyCollapsedView(CosmosAccount account) {
+        TreeItem<String> item = new TreeItem<>(account.getName());
+//        if (account.databaseCount() <= 0) {
+        item.getChildren().add(new TreeItem<>());
+//        }
+        item.addEventHandler(EventType.ROOT, event -> {
+            switch (event.getEventType().getName()) {
+                case "BranchExpandedEvent":
+                    expandAccountView(item, account);
+                    break;
+                default:
+                    System.out.println("Unhandled event: " + event.getEventType().getName());
+            }
+        });
+        return item;
+    }
+
+    private static void expandAccountView(TreeItem<String> item, CosmosAccount account) {
+        if (!account.isAccountRefreshed()) {
+            item.getChildren().removeFirst();
+            account.refresh();
+            account.iterateDatabases().forEachRemaining(cosmosDatabase -> {
+                item.getChildren().add(cosmosDatabase.generateView());
+            });
+            account.setAccountRefreshed(true);
+        }
     }
 }

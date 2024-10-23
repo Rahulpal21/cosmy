@@ -1,4 +1,4 @@
-package org.cosmy;
+package org.cosmy.controllers;
 
 import com.azure.cosmos.CosmosAsyncContainer;
 import com.azure.cosmos.models.CosmosItemResponse;
@@ -20,6 +20,9 @@ import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import org.cosmy.context.IObservableModelRegistry;
+import org.cosmy.context.ObservableModelRegistryImpl;
+import org.cosmy.context.PaginationContext;
 import org.cosmy.model.CosmosContainer;
 import org.cosmy.model.ObservableModelKey;
 import org.cosmy.spec.IController;

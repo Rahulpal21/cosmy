@@ -1,4 +1,4 @@
-package org.cosmy;
+package org.cosmy.controllers;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -8,6 +8,9 @@ import javafx.scene.control.TabPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import org.cosmy.App;
+import org.cosmy.context.IObservableModelRegistry;
+import org.cosmy.context.ObservableModelRegistryImpl;
 import org.cosmy.model.ObservableModelKey;
 import org.cosmy.view.TreeViewPane;
 

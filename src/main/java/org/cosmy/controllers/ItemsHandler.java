@@ -1,10 +1,14 @@
-package org.cosmy;
+package org.cosmy.controllers;
 
 import javafx.collections.ObservableList;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
+import org.cosmy.*;
+import org.cosmy.context.ConnectionsContainer;
+import org.cosmy.context.IObservableModelRegistry;
+import org.cosmy.context.ObservableModelRegistryImpl;
 import org.cosmy.model.ObservableModelKey;
 
 import java.io.IOException;
