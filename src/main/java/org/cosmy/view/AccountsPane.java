@@ -2,9 +2,13 @@ package org.cosmy.view;
 
 import javafx.collections.ObservableList;
 import javafx.event.EventType;
+import javafx.scene.Node;
 import javafx.scene.control.TreeCell;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.util.Callback;
 import org.cosmy.context.ConnectionsContainer;
 import org.cosmy.context.IObservableModelRegistry;
 import org.cosmy.context.ObservableModelRegistryImpl;
@@ -20,6 +24,7 @@ import org.cosmy.utils.FXMLUtils;
 import org.kordamp.ikonli.javafx.FontIcon;
 
 import java.io.IOException;
+import java.util.Objects;
 
 /// @author Rahul Pal
 public class AccountsPane implements IVisualElement {
@@ -44,48 +49,54 @@ public class AccountsPane implements IVisualElement {
 
             treeView = (TreeView) FXMLUtils.loadFXML(FXMLConstants.ACCOUNTS_PANE_FXML, controller);
 
-            TreeItem<String> accountRoot = new TreeItem<>("Accounts");
-            FontIcon icon = new FontIcon("mdomz-supervisor_account");
+            FontIcon icon = new FontIcon("mdal-account_circle");
 
+            TreeItem<String> accountRoot = new TreeItem<>("Accounts", icon);
             accountRoot.setGraphic(icon);
             accountRoot.getGraphic().setVisible(true);
 
-            modelRegistry.register(ObservableModelKey.ACCOUNTS, accountRoot.getChildren());
-            customCellFactory(treeView, accountRoot);
+            ObservableModelRegistryImpl.getInstance().register(ObservableModelKey.ACCOUNTS, accountRoot.getChildren());
+            treeView.setRoot(accountRoot);
+            treeView.setCellFactory(getCustomCellFactory());
             restore();
+
         } catch (IOException e) {
             throw new CosmyException(e.getMessage(), e);
         }
     }
 
-    private void customCellFactory(TreeView<String> dbAccounts, TreeItem<String> accountRoot) {
-        dbAccounts.setCellFactory(treeView -> {
-            TreeCell<String> cell = new TreeCell<>() {
-                @Override
-                protected void updateItem(String s, boolean b) {
-                    super.updateItem(s, b);
-                    if (b) {
-                        setText(null);
-                    } else {
-                        setText(s);
+    private Callback<TreeView<String>, TreeCell<String>> getCustomCellFactory() {
+        return new Callback<>() {
+
+            @Override
+            public TreeCell<String> call(TreeView<String> stringTreeView) {
+                TreeCell<String> cell = new TreeCell<>() {
+                    @Override
+                    protected void updateItem(String s, boolean b) {
+                        super.updateItem(s, b);
+                        if (b) {
+                            setText(null);
+                        } else {
+                            setText(s);
+                        }
                     }
-                }
-            };
-            cell.setOnMouseClicked(AccountsViewController::launchItemsTab);
+                };
 
-            cell.setOnKeyReleased(keyEvent -> {
-                //TODO investigate enter event on items cell
-                System.out.println(keyEvent);
-            });
-            cell.setOnKeyPressed(keyEvent -> {
-                //TODO investigate enter event on items cell
-                System.out.println(keyEvent);
-            });
+                cell.setOnMouseClicked(AccountsViewController::launchItemsTab);
 
-            return cell;
-        });
+                cell.setOnKeyReleased(keyEvent -> {
+                    //TODO investigate enter event on items cell
+                    System.out.println(keyEvent);
+                });
+                cell.setOnKeyPressed(keyEvent -> {
+                    //TODO investigate enter event on items cell
+                    System.out.println(keyEvent);
+                });
 
-        dbAccounts.setRoot(accountRoot);
+                return cell;
+            }
+        };
+
     }
 
     public void restore() {
@@ -117,7 +128,9 @@ public class AccountsPane implements IVisualElement {
     }
 
     public static TreeItem<String> generateEmptyCollapsedView(CosmosAccount account) {
+        Node icon = new ImageView(new Image(Objects.requireNonNull(AccountsPane.class.getResourceAsStream("/icons/telescope.png"))));
         TreeItem<String> item = new TreeItem<>(account.getName());
+
 //        if (account.databaseCount() <= 0) {
         item.getChildren().add(new TreeItem<>());
 //        }
