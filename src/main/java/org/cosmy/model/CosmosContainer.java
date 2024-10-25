@@ -3,6 +3,7 @@ package org.cosmy.model;
 import com.azure.cosmos.CosmosAsyncContainer;
 import javafx.event.EventTarget;
 import javafx.scene.control.TreeItem;
+import org.cosmy.controllers.AccountsViewController;
 import org.cosmy.ui.ContainerDetails;
 import org.cosmy.view.AccountsTreeItemFactory;
 import org.cosmy.view.AccountsTreeLevels;
@@ -65,10 +66,16 @@ public class CosmosContainer implements Serializable {
     }
 
     private List<TreeItem<AccountsTreeNode>> generateContainerOptions() {
-        List<TreeItem<AccountsTreeNode>> items = new ArrayList<>();
-        TreeItem<AccountsTreeNode> documentsView = AccountsTreeItemFactory.getInstance().newTreeItem("Items", AccountsTreeLevels.ACTION);
-        items.add(documentsView);
-        return items;
+        List<TreeItem<AccountsTreeNode>> options = new ArrayList<>();
+        TreeItem<AccountsTreeNode> itemsExplorerOption = AccountsTreeItemFactory.getInstance().newTreeItem("Items", AccountsTreeLevels.ACTION);
+        itemsExplorerOption.getValue().setUserData(this);
+        decorateHandlers(itemsExplorerOption);
+        options.add(itemsExplorerOption);
+        return options;
+    }
+
+    private void decorateHandlers(TreeItem<AccountsTreeNode> itemsExplorerOption) {
+        itemsExplorerOption.getValue().setOnMouseClicked(AccountsViewController::launchItemsTab);
     }
 
     private void loadDocumentsTab(EventTarget target) {

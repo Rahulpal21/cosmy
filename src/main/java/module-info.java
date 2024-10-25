@@ -6,6 +6,8 @@ module org.cosmy {
     requires org.kordamp.ikonli.core;
     requires org.kordamp.ikonli.javafx;
     requires org.kordamp.ikonli.material2;
+    requires org.kordamp.ikonli.antdesignicons;
+    requires org.kordamp.ikonli.remixicon;
 
     opens org.cosmy to javafx.fxml;
     exports org.cosmy;

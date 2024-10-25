@@ -49,9 +49,7 @@ public class AccountsPane implements IVisualElement {
 
             treeView = (TreeView<AccountsTreeNode>) FXMLUtils.loadFXML(FXMLConstants.ACCOUNTS_PANE_FXML, controller);
 
-            FontIcon icon = new FontIcon("mdal-account_circle");
-
-            TreeItem<AccountsTreeNode> accountRoot = AccountsTreeItemFactory.getInstance().newTreeItem("Accounts", AccountsTreeLevels.ACCOUNT);
+            TreeItem<AccountsTreeNode> accountRoot = AccountsTreeItemFactory.getInstance().newTreeItem("Accounts", AccountsTreeLevels.ROOT);
 
 //            accountRoot.setGraphic(icon);
 //            accountRoot.getGraphic().setVisible(true);

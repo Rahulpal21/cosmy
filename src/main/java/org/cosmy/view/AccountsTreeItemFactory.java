@@ -35,6 +35,7 @@ public class AccountsTreeItemFactory {
 
     private Node resolveIcon(int level) {
         switch (level){
+            case AccountsTreeLevels.ROOT: return new FontIcon(IconConstants.ACCOUNTS_ROOT_ICON);
             case AccountsTreeLevels.ACCOUNT: return new FontIcon(IconConstants.ACCOUNT_ELEMENT_ICON);
             case AccountsTreeLevels.DATABASE: return new FontIcon(IconConstants.DATABASE_ELEMENT_ICON);
             case AccountsTreeLevels.COLLECTION: return new FontIcon(IconConstants.COLLECTION_ELEMENT_ICON);
