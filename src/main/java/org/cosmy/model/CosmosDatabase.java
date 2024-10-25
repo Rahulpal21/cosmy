@@ -2,6 +2,9 @@ package org.cosmy.model;
 
 import com.azure.cosmos.CosmosAsyncDatabase;
 import javafx.scene.control.TreeItem;
+import org.cosmy.view.AccountsTreeItemFactory;
+import org.cosmy.view.AccountsTreeLevels;
+import org.cosmy.view.AccountsTreeNode;
 
 import java.io.Serializable;
 import java.util.HashMap;
@@ -65,8 +68,8 @@ public class CosmosDatabase implements Serializable {
         initialized.set(true);
     }
 
-    public TreeItem<String> generateView() {
-        TreeItem<String> item = new TreeItem<>(this.name);
+    public TreeItem<AccountsTreeNode> generateView() {
+        TreeItem<AccountsTreeNode> item = AccountsTreeItemFactory.getInstance().newTreeItem(this.name, AccountsTreeLevels.DATABASE);
         collections.forEach((s, cosmosContainer) -> {
             item.getChildren().add(cosmosContainer.generateView());
         });

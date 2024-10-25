@@ -1,4 +1,4 @@
-module org.cosmy.example {
+module org.cosmy {
     requires javafx.fxml;
     requires javafx.controls;
     requires com.azure.cosmos;
@@ -6,6 +6,8 @@ module org.cosmy.example {
     requires org.kordamp.ikonli.core;
     requires org.kordamp.ikonli.javafx;
     requires org.kordamp.ikonli.material2;
+    requires org.kordamp.ikonli.antdesignicons;
+    requires org.kordamp.ikonli.remixicon;
 
     opens org.cosmy to javafx.fxml;
     exports org.cosmy;

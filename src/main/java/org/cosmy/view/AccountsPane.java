@@ -5,11 +5,10 @@ import javafx.event.EventType;
 import javafx.scene.control.TreeCell;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
+import javafx.util.Callback;
 import org.cosmy.context.ConnectionsContainer;
-import org.cosmy.context.IObservableModelRegistry;
 import org.cosmy.context.ObservableModelRegistryImpl;
 import org.cosmy.controllers.AccountsViewController;
-import org.cosmy.controllers.ItemsHandler;
 import org.cosmy.model.CosmosAccount;
 import org.cosmy.model.ObservableModelKey;
 import org.cosmy.spec.CosmyException;
@@ -17,22 +16,17 @@ import org.cosmy.spec.IController;
 import org.cosmy.spec.IVisualElement;
 import org.cosmy.utils.FXMLConstants;
 import org.cosmy.utils.FXMLUtils;
-import org.kordamp.ikonli.javafx.FontIcon;
 
 import java.io.IOException;
 
 /// @author Rahul Pal
 public class AccountsPane implements IVisualElement {
 
-    private TreeView treeView;
+    private TreeView<AccountsTreeNode> treeView;
     private final IController controller;
-    private final ItemsHandler itemsHandler;
-    private final IObservableModelRegistry modelRegistry;
 
     public AccountsPane() {
         controller = new AccountsViewController();
-        modelRegistry = ObservableModelRegistryImpl.getInstance();
-        itemsHandler = new ItemsHandler();
     }
 
     /**
@@ -41,58 +35,50 @@ public class AccountsPane implements IVisualElement {
     @Override
     public void initialize() {
         try {
-
-            treeView = (TreeView) FXMLUtils.loadFXML(FXMLConstants.ACCOUNTS_PANE_FXML, controller);
-
-            TreeItem<String> accountRoot = new TreeItem<>("Accounts");
-            FontIcon icon = new FontIcon("mdomz-supervisor_account");
-
-            accountRoot.setGraphic(icon);
-            accountRoot.getGraphic().setVisible(true);
-
-            modelRegistry.register(ObservableModelKey.ACCOUNTS, accountRoot.getChildren());
-            customCellFactory(treeView, accountRoot);
+            treeView = (TreeView<AccountsTreeNode>) FXMLUtils.loadFXML(FXMLConstants.ACCOUNTS_PANE_FXML, controller);
+            TreeItem<AccountsTreeNode> accountRoot = AccountsTreeItemFactory.getInstance().newTreeItem("Accounts", AccountsTreeLevels.ROOT);
+            ObservableModelRegistryImpl.getInstance().register(ObservableModelKey.ACCOUNTS, accountRoot.getChildren());
+            treeView.setRoot(accountRoot);
             restore();
         } catch (IOException e) {
             throw new CosmyException(e.getMessage(), e);
         }
     }
 
-    private void customCellFactory(TreeView<String> dbAccounts, TreeItem<String> accountRoot) {
-        dbAccounts.setCellFactory(treeView -> {
-            TreeCell<String> cell = new TreeCell<>() {
-                @Override
-                protected void updateItem(String s, boolean b) {
-                    super.updateItem(s, b);
-                    if (b) {
-                        setText(null);
-                    } else {
-                        setText(s);
+    //this method is left for future reference
+    private Callback<TreeView<String>, TreeCell<String>> getCustomCellFactory() {
+        return new Callback<>() {
+
+            @Override
+            public TreeCell<String> call(TreeView<String> stringTreeView) {
+                TreeCell<String> cell = new TreeCell<>() {
+                    @Override
+                    protected void updateItem(String s, boolean b) {
+                        super.updateItem(s, b);
+                        if (b) {
+                            setText(null);
+                        } else {
+                            setText(s);
+                        }
                     }
-                }
-            };
-            cell.setOnMouseClicked(AccountsViewController::launchItemsTab);
+                };
 
-            cell.setOnKeyReleased(keyEvent -> {
-                //TODO investigate enter event on items cell
-                System.out.println(keyEvent);
-            });
-            cell.setOnKeyPressed(keyEvent -> {
-                //TODO investigate enter event on items cell
-                System.out.println(keyEvent);
-            });
+                cell.setOnMouseClicked(AccountsViewController::launchItemsTab);
 
-            return cell;
-        });
+                cell.setOnKeyReleased(keyEvent -> {
+                    //TODO investigate enter event on items cell
+                    System.out.println(keyEvent);
+                });
+                return cell;
+            }
+        };
 
-        dbAccounts.setRoot(accountRoot);
     }
 
     public void restore() {
-        ObservableList<TreeItem<String>> accounts = (ObservableList<TreeItem<String>>) ObservableModelRegistryImpl.getInstance().lookup(ObservableModelKey.ACCOUNTS);
+        ObservableList<TreeItem<AccountsTreeNode>> accounts = (ObservableList<TreeItem<AccountsTreeNode>>) ObservableModelRegistryImpl.getInstance().lookup(ObservableModelKey.ACCOUNTS);
         ConnectionsContainer.getInstance().iterateAccounts().forEachRemaining(cosmosAccount -> {
-            TreeItem<String> item = generateEmptyCollapsedView(cosmosAccount);
-            accounts.add(item);
+            accounts.add(generateEmptyCollapsedView(cosmosAccount));
         });
     }
 
@@ -116,11 +102,12 @@ public class AccountsPane implements IVisualElement {
         return treeView;
     }
 
-    public static TreeItem<String> generateEmptyCollapsedView(CosmosAccount account) {
-        TreeItem<String> item = new TreeItem<>(account.getName());
-//        if (account.databaseCount() <= 0) {
+    public static TreeItem<AccountsTreeNode> generateEmptyCollapsedView(CosmosAccount account) {
+
+        TreeItem<AccountsTreeNode> item = AccountsTreeItemFactory.getInstance().newTreeItem(account.getName(), AccountsTreeLevels.ACCOUNT);
+
         item.getChildren().add(new TreeItem<>());
-//        }
+
         item.addEventHandler(EventType.ROOT, event -> {
             switch (event.getEventType().getName()) {
                 case "BranchExpandedEvent":
@@ -133,7 +120,7 @@ public class AccountsPane implements IVisualElement {
         return item;
     }
 
-    private static void expandAccountView(TreeItem<String> item, CosmosAccount account) {
+    private static void expandAccountView(TreeItem<AccountsTreeNode> item, CosmosAccount account) {
         if (!account.isAccountRefreshed()) {
             item.getChildren().removeFirst();
             account.refresh();
@@ -145,7 +132,7 @@ public class AccountsPane implements IVisualElement {
     }
 
     public void acceptNewAccount(CosmosAccount account) {
-        ObservableList<TreeItem<String>> accounts = (ObservableList<TreeItem<String>>) ObservableModelRegistryImpl.getInstance().lookup(ObservableModelKey.ACCOUNTS);
+        ObservableList<TreeItem<AccountsTreeNode>> accounts = (ObservableList<TreeItem<AccountsTreeNode>>) ObservableModelRegistryImpl.getInstance().lookup(ObservableModelKey.ACCOUNTS);
         accounts.add(generateEmptyCollapsedView(account));
     }
 }

@@ -27,4 +27,4 @@ bytecode editor: https://github.com/Col-E/Recaf
 
 
 json schema validation against schema https://github.com/erosb/json-sKema
-rich text library for text area https://github.com/FXMisc/RichTextFX
+rich text library for text area Minmhttps://github.com/FXMisc/RichTextFX
