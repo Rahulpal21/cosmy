@@ -2,18 +2,13 @@ package org.cosmy.view;
 
 import javafx.collections.ObservableList;
 import javafx.event.EventType;
-import javafx.scene.Node;
 import javafx.scene.control.TreeCell;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.util.Callback;
 import org.cosmy.context.ConnectionsContainer;
-import org.cosmy.context.IObservableModelRegistry;
 import org.cosmy.context.ObservableModelRegistryImpl;
 import org.cosmy.controllers.AccountsViewController;
-import org.cosmy.controllers.ItemsHandler;
 import org.cosmy.model.CosmosAccount;
 import org.cosmy.model.ObservableModelKey;
 import org.cosmy.spec.CosmyException;
@@ -21,23 +16,17 @@ import org.cosmy.spec.IController;
 import org.cosmy.spec.IVisualElement;
 import org.cosmy.utils.FXMLConstants;
 import org.cosmy.utils.FXMLUtils;
-import org.kordamp.ikonli.javafx.FontIcon;
 
 import java.io.IOException;
-import java.util.Objects;
 
 /// @author Rahul Pal
 public class AccountsPane implements IVisualElement {
 
     private TreeView<AccountsTreeNode> treeView;
     private final IController controller;
-    private final ItemsHandler itemsHandler;
-    private final IObservableModelRegistry modelRegistry;
 
     public AccountsPane() {
         controller = new AccountsViewController();
-        modelRegistry = ObservableModelRegistryImpl.getInstance();
-        itemsHandler = new ItemsHandler();
     }
 
     /**
@@ -46,24 +35,17 @@ public class AccountsPane implements IVisualElement {
     @Override
     public void initialize() {
         try {
-
             treeView = (TreeView<AccountsTreeNode>) FXMLUtils.loadFXML(FXMLConstants.ACCOUNTS_PANE_FXML, controller);
-
             TreeItem<AccountsTreeNode> accountRoot = AccountsTreeItemFactory.getInstance().newTreeItem("Accounts", AccountsTreeLevels.ROOT);
-
-//            accountRoot.setGraphic(icon);
-//            accountRoot.getGraphic().setVisible(true);
-
             ObservableModelRegistryImpl.getInstance().register(ObservableModelKey.ACCOUNTS, accountRoot.getChildren());
             treeView.setRoot(accountRoot);
-//            treeView.setCellFactory(getCustomCellFactory());
             restore();
-
         } catch (IOException e) {
             throw new CosmyException(e.getMessage(), e);
         }
     }
 
+    //this method is left for future reference
     private Callback<TreeView<String>, TreeCell<String>> getCustomCellFactory() {
         return new Callback<>() {
 
@@ -87,11 +69,6 @@ public class AccountsPane implements IVisualElement {
                     //TODO investigate enter event on items cell
                     System.out.println(keyEvent);
                 });
-                cell.setOnKeyPressed(keyEvent -> {
-                    //TODO investigate enter event on items cell
-                    System.out.println(keyEvent);
-                });
-
                 return cell;
             }
         };
