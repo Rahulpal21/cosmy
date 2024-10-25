@@ -1,8 +1,8 @@
 package org.cosmy.view;
 
-import javafx.event.EventType;
-import javafx.scene.control.Label;
+import javafx.scene.Node;
 import javafx.scene.control.TreeItem;
+import org.cosmy.utils.IconConstants;
 import org.kordamp.ikonli.javafx.FontIcon;
 
 public class AccountsTreeItemFactory {
@@ -20,15 +20,27 @@ public class AccountsTreeItemFactory {
         return instance;
     }
 
-    public TreeItem<Label> newTreeItem(Label label, FontIcon icon) {
-        TreeItem<Label> treeItem = new TreeItem<>(label, icon);
-        treeItem.addEventHandler(EventType.ROOT, event -> {
-            System.out.println(">>>>>>>  " + event);
-        });
-        label.setOnMouseClicked(mouseEvent -> {
-            System.out.println("*******  " + mouseEvent);
-            label.requestFocus();
-        });
+    public TreeItem<AccountsTreeNode> newTreeItem(String text, int level) {
+        AccountsTreeNode node = new AccountsTreeNode(text);
+        TreeItem<AccountsTreeNode> treeItem = new TreeItem<>(node, resolveIcon(level));
+//        treeItem.addEventHandler(EventType.ROOT, event -> {
+//            System.out.println(">>>>>>>  " + event);
+//        });
+//        node.setOnMouseClicked(mouseEvent -> {
+//            System.out.println("*******  " + mouseEvent);
+//            node.requestFocus();
+//        });
         return treeItem;
     }
+
+    private Node resolveIcon(int level) {
+        switch (level){
+            case AccountsTreeLevels.ACCOUNT: return new FontIcon(IconConstants.ACCOUNT_ELEMENT_ICON);
+            case AccountsTreeLevels.DATABASE: return new FontIcon(IconConstants.DATABASE_ELEMENT_ICON);
+            case AccountsTreeLevels.COLLECTION: return new FontIcon(IconConstants.COLLECTION_ELEMENT_ICON);
+            case AccountsTreeLevels.ACTION: return new FontIcon(IconConstants.ITEMS_OPTION_ICON);
+        }
+        return null;
+    }
+
 }

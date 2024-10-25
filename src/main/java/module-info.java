@@ -1,4 +1,4 @@
-module org.cosmy.example {
+module org.cosmy {
     requires javafx.fxml;
     requires javafx.controls;
     requires com.azure.cosmos;

@@ -29,7 +29,7 @@ import java.util.Objects;
 /// @author Rahul Pal
 public class AccountsPane implements IVisualElement {
 
-    private TreeView treeView;
+    private TreeView<AccountsTreeNode> treeView;
     private final IController controller;
     private final ItemsHandler itemsHandler;
     private final IObservableModelRegistry modelRegistry;
@@ -47,17 +47,18 @@ public class AccountsPane implements IVisualElement {
     public void initialize() {
         try {
 
-            treeView = (TreeView) FXMLUtils.loadFXML(FXMLConstants.ACCOUNTS_PANE_FXML, controller);
+            treeView = (TreeView<AccountsTreeNode>) FXMLUtils.loadFXML(FXMLConstants.ACCOUNTS_PANE_FXML, controller);
 
             FontIcon icon = new FontIcon("mdal-account_circle");
 
-            TreeItem<String> accountRoot = new TreeItem<>("Accounts", icon);
-            accountRoot.setGraphic(icon);
-            accountRoot.getGraphic().setVisible(true);
+            TreeItem<AccountsTreeNode> accountRoot = AccountsTreeItemFactory.getInstance().newTreeItem("Accounts", AccountsTreeLevels.ACCOUNT);
+
+//            accountRoot.setGraphic(icon);
+//            accountRoot.getGraphic().setVisible(true);
 
             ObservableModelRegistryImpl.getInstance().register(ObservableModelKey.ACCOUNTS, accountRoot.getChildren());
             treeView.setRoot(accountRoot);
-            treeView.setCellFactory(getCustomCellFactory());
+//            treeView.setCellFactory(getCustomCellFactory());
             restore();
 
         } catch (IOException e) {
@@ -100,10 +101,9 @@ public class AccountsPane implements IVisualElement {
     }
 
     public void restore() {
-        ObservableList<TreeItem<String>> accounts = (ObservableList<TreeItem<String>>) ObservableModelRegistryImpl.getInstance().lookup(ObservableModelKey.ACCOUNTS);
+        ObservableList<TreeItem<AccountsTreeNode>> accounts = (ObservableList<TreeItem<AccountsTreeNode>>) ObservableModelRegistryImpl.getInstance().lookup(ObservableModelKey.ACCOUNTS);
         ConnectionsContainer.getInstance().iterateAccounts().forEachRemaining(cosmosAccount -> {
-            TreeItem<String> item = generateEmptyCollapsedView(cosmosAccount);
-            accounts.add(item);
+            accounts.add(generateEmptyCollapsedView(cosmosAccount));
         });
     }
 
@@ -127,13 +127,12 @@ public class AccountsPane implements IVisualElement {
         return treeView;
     }
 
-    public static TreeItem<String> generateEmptyCollapsedView(CosmosAccount account) {
-        Node icon = new ImageView(new Image(Objects.requireNonNull(AccountsPane.class.getResourceAsStream("/icons/telescope.png"))));
-        TreeItem<String> item = new TreeItem<>(account.getName());
+    public static TreeItem<AccountsTreeNode> generateEmptyCollapsedView(CosmosAccount account) {
 
-//        if (account.databaseCount() <= 0) {
+        TreeItem<AccountsTreeNode> item = AccountsTreeItemFactory.getInstance().newTreeItem(account.getName(), AccountsTreeLevels.ACCOUNT);
+
         item.getChildren().add(new TreeItem<>());
-//        }
+
         item.addEventHandler(EventType.ROOT, event -> {
             switch (event.getEventType().getName()) {
                 case "BranchExpandedEvent":
@@ -146,7 +145,7 @@ public class AccountsPane implements IVisualElement {
         return item;
     }
 
-    private static void expandAccountView(TreeItem<String> item, CosmosAccount account) {
+    private static void expandAccountView(TreeItem<AccountsTreeNode> item, CosmosAccount account) {
         if (!account.isAccountRefreshed()) {
             item.getChildren().removeFirst();
             account.refresh();
@@ -158,7 +157,7 @@ public class AccountsPane implements IVisualElement {
     }
 
     public void acceptNewAccount(CosmosAccount account) {
-        ObservableList<TreeItem<String>> accounts = (ObservableList<TreeItem<String>>) ObservableModelRegistryImpl.getInstance().lookup(ObservableModelKey.ACCOUNTS);
+        ObservableList<TreeItem<AccountsTreeNode>> accounts = (ObservableList<TreeItem<AccountsTreeNode>>) ObservableModelRegistryImpl.getInstance().lookup(ObservableModelKey.ACCOUNTS);
         accounts.add(generateEmptyCollapsedView(account));
     }
 }
