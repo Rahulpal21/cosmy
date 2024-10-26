@@ -21,7 +21,7 @@ public class AccountsTreeItemFactory {
     }
 
     public TreeItem<AccountsTreeNode> newTreeItem(String text, int level) {
-        AccountsTreeNode node = new AccountsTreeNode(text);
+        AccountsTreeNode node = new AccountsTreeNode(text, level);
         TreeItem<AccountsTreeNode> treeItem = new TreeItem<>(node, resolveIcon(level));
         return treeItem;
     }
