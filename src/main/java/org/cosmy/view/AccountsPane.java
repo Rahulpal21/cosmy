@@ -1,7 +1,8 @@
 package org.cosmy.view;
 
 import javafx.collections.ObservableList;
-import javafx.event.EventType;
+import javafx.concurrent.Task;
+import javafx.scene.control.ProgressIndicator;
 import javafx.scene.control.TreeCell;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
@@ -16,6 +17,7 @@ import org.cosmy.spec.IController;
 import org.cosmy.spec.IVisualElement;
 import org.cosmy.utils.FXMLConstants;
 import org.cosmy.utils.FXMLUtils;
+import org.cosmy.utils.MessageConstants;
 
 import java.io.IOException;
 
@@ -23,7 +25,7 @@ import java.io.IOException;
 public class AccountsPane implements IVisualElement {
 
     private TreeView<AccountsTreeNode> treeView;
-    private final IController controller;
+    private final AccountsViewController controller;
 
     public AccountsPane() {
         controller = new AccountsViewController();
@@ -39,6 +41,9 @@ public class AccountsPane implements IVisualElement {
             TreeItem<AccountsTreeNode> accountRoot = AccountsTreeItemFactory.getInstance().newTreeItem("Accounts", AccountsTreeLevels.ROOT);
             ObservableModelRegistryImpl.getInstance().register(ObservableModelKey.ACCOUNTS, accountRoot.getChildren());
             treeView.setRoot(accountRoot);
+            /*treeView.addEventHandler(EventType.ROOT, event -> {
+                System.out.println(">>>>>>>>>>   "+event.getEventType().getName());
+            });*/
             restore();
         } catch (IOException e) {
             throw new CosmyException(e.getMessage(), e);
@@ -78,7 +83,7 @@ public class AccountsPane implements IVisualElement {
     public void restore() {
         ObservableList<TreeItem<AccountsTreeNode>> accounts = (ObservableList<TreeItem<AccountsTreeNode>>) ObservableModelRegistryImpl.getInstance().lookup(ObservableModelKey.ACCOUNTS);
         ConnectionsContainer.getInstance().iterateAccounts().forEachRemaining(cosmosAccount -> {
-            accounts.add(generateEmptyCollapsedView(cosmosAccount));
+            accounts.add(AccountsViewController.generateEmptyCollapsedView(cosmosAccount));
         });
     }
 
@@ -102,37 +107,8 @@ public class AccountsPane implements IVisualElement {
         return treeView;
     }
 
-    public static TreeItem<AccountsTreeNode> generateEmptyCollapsedView(CosmosAccount account) {
-
-        TreeItem<AccountsTreeNode> item = AccountsTreeItemFactory.getInstance().newTreeItem(account.getName(), AccountsTreeLevels.ACCOUNT);
-
-        item.getChildren().add(new TreeItem<>());
-
-        item.addEventHandler(EventType.ROOT, event -> {
-            switch (event.getEventType().getName()) {
-                case "BranchExpandedEvent":
-                    expandAccountView(item, account);
-                    break;
-                default:
-                    System.out.println("Unhandled event: " + event.getEventType().getName());
-            }
-        });
-        return item;
-    }
-
-    private static void expandAccountView(TreeItem<AccountsTreeNode> item, CosmosAccount account) {
-        if (!account.isAccountRefreshed()) {
-            item.getChildren().removeFirst();
-            account.refresh();
-            account.iterateDatabases().forEachRemaining(cosmosDatabase -> {
-                item.getChildren().add(cosmosDatabase.generateView());
-            });
-            account.setAccountRefreshed(true);
-        }
-    }
 
     public void acceptNewAccount(CosmosAccount account) {
-        ObservableList<TreeItem<AccountsTreeNode>> accounts = (ObservableList<TreeItem<AccountsTreeNode>>) ObservableModelRegistryImpl.getInstance().lookup(ObservableModelKey.ACCOUNTS);
-        accounts.add(generateEmptyCollapsedView(account));
+        controller.acceptNewAccount(account);
     }
 }

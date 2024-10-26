@@ -6,4 +6,5 @@ public interface AccountsTreeLevels {
     int DATABASE = 2;
     int COLLECTION = 3;
     int ACTION = 4;
+    int LOADING_INDICATOR = -1;
 }
