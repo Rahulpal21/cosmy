@@ -150,14 +150,6 @@ public class ItemTabController implements IController {
             loadItems(Optional.empty());
         });
 
-        //bindings for pagination buttons
-//        try {
-//            nextButtonBinding = JavaBeanBooleanPropertyBuilder.create().bean(paginationContext).beanClass(PaginationContext.class).name("nextButtonDisabled").build();
-//            nextPageButton.disableProperty().bind(nextButtonBinding);
-//        } catch (NoSuchMethodException e) {
-//            System.out.println(e);
-//        }
-
         loadItems(Optional.empty());
     }
 
