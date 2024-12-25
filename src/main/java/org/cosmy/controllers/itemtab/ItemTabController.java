@@ -1,4 +1,4 @@
-package org.cosmy.controllers;
+package org.cosmy.controllers.itemtab;
 
 import com.azure.cosmos.CosmosAsyncContainer;
 import com.azure.cosmos.models.CosmosItemResponse;
@@ -83,15 +83,14 @@ public class ItemTabController implements IController {
     private AtomicBoolean filterSet = new AtomicBoolean(false);
     private JavaBeanBooleanProperty nextButtonBinding;
 
+    //sub-controllers
+    private ItemViewPaneController viewPaneController;
+
     public ItemTabController(CosmosContainer container) {
         this.container = container;
         this.tabName = generateTabName(container);
-
-        this.jsonPrinter = new ObjectMapper();
-        this.jsonPrinter.registerModule(new JavaTimeModule());
-        this.jsonPrinter.enable(SerializationFeature.INDENT_OUTPUT, SerializationFeature.FLUSH_AFTER_WRITE_VALUE);
-
-        paginationContext = new PaginationContext();
+        this.jsonPrinter = JsonPrinterFactory.getJsonPrinter();
+        this.paginationContext = new PaginationContext();
     }
 
     private String generateTabName(CosmosContainer container) {
@@ -99,7 +98,7 @@ public class ItemTabController implements IController {
     }
 
     @FXML
-    private void initialize() {
+    public void initialize() {
         IObservableModelRegistry modelRegistry = ObservableModelRegistryImpl.getInstance();
         ObservableList<Tab> tabs = (ObservableList<Tab>) modelRegistry.lookup(ObservableModelKey.TABS);
 
@@ -107,18 +106,12 @@ public class ItemTabController implements IController {
             splitPane.setDividerPosition(0, 0.30);
         });
 
-        itemTextArea.textProperty().addListener((observableValue, oldVal, newVal) -> {
-            if (validateItemButton.isDisabled()) {
-                this.validateItemButton.setDisable(false);
-            }
-        });
+        //initialize sub-controllers
+        viewPaneController = new ItemViewPaneController(this, container, itemTextArea, newItemButton, saveItemButton, deleteItemButton, validateItemButton, editItemButton);
+        viewPaneController.initialize();
+
         //set action handlers for buttons
-        deleteItemButton.setOnAction(event -> deleteItem());
         reloadItemsButton.setOnAction(event -> loadItems(Optional.empty()));
-        newItemButton.setOnAction(event -> newItem());
-        validateItemButton.setOnAction(event -> validateNewItemJson());
-        saveItemButton.setOnAction(event -> saveItem());
-        editItemButton.setOnAction(event -> editItem());
         clearFilterButton.setOnAction(event -> {
             clearFilter();
         });
@@ -199,109 +192,8 @@ public class ItemTabController implements IController {
         return false;
     }
 
-    private void editItem() {
-        itemTextArea.setEditable(true);
-    }
-
-    private void saveItem() {
-        String itemText = this.itemTextArea.getText();
-        try (Reader reader = new StringReader(itemText)) {
-            JsonNode jsonNode = jsonPrinter.readTree(reader);
-            Mono<CosmosItemResponse<JsonNode>> response = container.getAsyncContainer().upsertItem(jsonNode);
-            response.handle((createResponse, synchronousSink) -> {
-                //TODO handle diagnostic information if enabled through preferences
-                System.out.println(createResponse.getStatusCode());
-            }).doOnSuccess(object -> {
-                //TODO success dialig or status bar/activity pane message
-            }).doOnError(throwable -> {
-                showErrorDialog(throwable.getMessage());
-            }).subscribe();
-        } catch (IOException e) {
-            showErrorDialog(e.getMessage());
-        }
-
-    }
-
-    private void validateNewItemJson() {
-        String input = this.itemTextArea.getText();
-        if (validateJson(input)) {
-            Platform.runLater(() -> this.saveItemButton.setDisable(false));
-        } else {
-            showErrorDialog("Json is not valid");
-        }
-    }
-
-    private boolean validateJson(String input) {
-        //TODO return error details
-        try (Reader stringReader = new StringReader(input)) {
-            this.jsonPrinter.readTree(stringReader);
-            return true;
-        } catch (IOException e) {
-            System.out.println(e.getMessage());
-            return false;
-        }
-    }
-
-    private void newItem() {
-        try {
-            String template = getNewItemTemplate();
-            //TODO combine all in one runnable for platform thread
-            Platform.runLater(() -> {
-                clearItemReadingPane();
-                disableDeleteButton();
-                this.itemTextArea.setText(template);
-                this.itemTextArea.setEditable(true);
-                this.validateItemButton.setDisable(true);
-            });
-
-
-        } catch (JsonProcessingException e) {
-            //TODO error dialog
-            System.out.println(e);
-        }
-    }
-
-    private String getNewItemTemplate() throws JsonProcessingException {
-        Map<String, String> itemTemplateAttributes = new HashMap<>(2);
-        itemTemplateAttributes.put("id", UUID.randomUUID().toString());
-        itemTemplateAttributes.put(container.getContainerDetails().getPartitionKeyPaths().getFirst().replace("/", ""), "<replace with actual value>");
-        return this.jsonPrinter.writeValueAsString(itemTemplateAttributes);
-    }
-
-    private void deleteItem() {
-        if (((Optional) this.deleteItemButton.getUserData()).isEmpty()) {
-            return;
-        }
-        CosmosItem item = (CosmosItem) ((Optional) this.deleteItemButton.getUserData()).get();
-        container.getAsyncContainer().deleteItem(item.getItemId(), new PartitionKey(item.getPartitionKey())).doOnSuccess(objectCosmosItemResponse -> {
-            clearItemReadingPaneOnPlatformThread();
-            removeItemFromListViewOnPlatformThread(item);
-            disableDeleteButtonOnPlatformThread();
-        }).doOnError(throwable -> {
-            //TODO error dialog
-            System.out.println(throwable);
-        }).subscribe();
-    }
-
-    private void disableDeleteButtonOnPlatformThread() {
-        Platform.runLater(this::disableDeleteButton);
-    }
-
-    private void disableDeleteButton() {
-        this.deleteItemButton.setDisable(true);
-        this.deleteItemButton.setUserData(Optional.ofNullable(null));
-    }
-
-    private void removeItemFromListViewOnPlatformThread(CosmosItem item) {
+    public void removeItemFromListView(CosmosItem item) {
         Platform.runLater(() -> itemListView.getItems().remove(item));
-    }
-
-    private void clearItemReadingPaneOnPlatformThread() {
-        Platform.runLater(this::clearItemReadingPane);
-    }
-
-    private void clearItemReadingPane() {
-        itemTextArea.clear();
     }
 
     public void loadItems(Optional<String> continuationToken) {

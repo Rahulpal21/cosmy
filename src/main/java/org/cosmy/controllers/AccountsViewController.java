@@ -100,4 +100,9 @@ public class AccountsViewController implements IController {
         });
         return item;
     }
+
+    @Override
+    public void initialize() {
+
+    }
 }
