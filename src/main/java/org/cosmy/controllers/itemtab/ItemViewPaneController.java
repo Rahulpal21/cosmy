@@ -1,5 +1,6 @@
 package org.cosmy.controllers.itemtab;
 
+import com.azure.cosmos.CosmosAsyncContainer;
 import com.azure.cosmos.models.CosmosItemResponse;
 import com.azure.cosmos.models.PartitionKey;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -156,6 +157,43 @@ public class ItemViewPaneController implements IController {
         } catch (IOException e) {
             parentController.showErrorDialog(e.getMessage());
         }
+    }
+
+    public void loadItem(CosmosItem item, CosmosContainer container) {
+        // TODO error handling
+        CosmosAsyncContainer asyncContainer = container.getAsyncContainer();
+
+        // TODO support mutli-attribute partition keys
+        asyncContainer.readItem(item.getItemId(), new PartitionKey(item.getPartitionKey()), Map.class).handle((response, synchronousSink1) -> {
+            try {
+                String asString = jsonPrinter.writeValueAsString(response.getItem());
+                Platform.runLater(() -> {
+                    itemTextArea.setText(asString);
+                    itemTextArea.setEditable(false);
+                    validateItemButton.setDisable(true);
+                    saveItemButton.setDisable(true);
+                    editItemButton.setDisable(false);
+                });
+                enableDeleteButton();
+                // TODO
+            } catch (JsonProcessingException e) {
+                throw new RuntimeException(e);
+                //TODO error handling
+            }
+        }).doOnError(throwable -> {
+            System.out.println(throwable);
+        }).doOnSuccess(object -> {
+            contextualizeButtons(item);
+        }).subscribe();
+
+    }
+
+    private void enableDeleteButton() {
+        Platform.runLater(() -> this.deleteItemButton.setDisable(false));
+    }
+
+    private void contextualizeButtons(CosmosItem item) {
+        this.deleteItemButton.setUserData(Optional.ofNullable(item));
     }
 
 }

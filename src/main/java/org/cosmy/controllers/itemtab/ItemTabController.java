@@ -221,7 +221,7 @@ public class ItemTabController implements IController {
                 item.addEventHandler(EventType.ROOT, event -> {
                     if (MouseDoubleClickEvent.evaluate(event)) {
                         CosmosItem source = (CosmosItem) event.getSource();
-                        loadItem(source, container);
+                        viewPaneController.loadItem(source, container);
                     }
                 });
                 Platform.runLater(() -> this.itemListView.getItems().add(item));
@@ -245,43 +245,6 @@ public class ItemTabController implements IController {
             System.out.println(throwable);
         }).subscribe();
         // TODO error handling
-    }
-
-    public void loadItem(CosmosItem item, CosmosContainer container) {
-        // TODO error handling
-        CosmosAsyncContainer asyncContainer = container.getAsyncContainer();
-
-        // TODO support mutli-attribute partition keys
-        asyncContainer.readItem(item.getItemId(), new PartitionKey(item.getPartitionKey()), Map.class).handle((response, synchronousSink1) -> {
-            try {
-                String asString = jsonPrinter.writeValueAsString(response.getItem());
-                Platform.runLater(() -> {
-                    itemTextArea.setText(asString);
-                    itemTextArea.setEditable(false);
-                    validateItemButton.setDisable(true);
-                    saveItemButton.setDisable(true);
-                    editItemButton.setDisable(false);
-                });
-                enableDeleteButton();
-                // TODO
-            } catch (JsonProcessingException e) {
-                throw new RuntimeException(e);
-                //TODO error handling
-            }
-        }).doOnError(throwable -> {
-            System.out.println(throwable);
-        }).doOnSuccess(object -> {
-            contextualizeButtons(item);
-        }).subscribe();
-
-    }
-
-    private void enableDeleteButton() {
-        Platform.runLater(() -> this.deleteItemButton.setDisable(false));
-    }
-
-    private void contextualizeButtons(CosmosItem item) {
-        this.deleteItemButton.setUserData(Optional.ofNullable(item));
     }
 
     public void showErrorDialog(String errorMessage) {
