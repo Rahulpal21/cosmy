@@ -19,4 +19,6 @@ module org.cosmy {
     opens org.cosmy.controllers to javafx.fxml;
     exports org.cosmy.context;
     opens org.cosmy.context to javafx.fxml;
+    exports org.cosmy.controllers.itemtab;
+    opens org.cosmy.controllers.itemtab to javafx.fxml;
 }

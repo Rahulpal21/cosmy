@@ -82,5 +82,9 @@ public class CosmosContainer implements Serializable {
         System.out.println(target.getClass());
     }
 
+    public String getPartitionKey() {
+        String pKeyPath = getContainerDetails().getPartitionKeyPaths().getFirst();
+        return pKeyPath.replace("/", "");
+    }
 }
 

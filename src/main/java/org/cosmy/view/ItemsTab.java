@@ -3,7 +3,7 @@ package org.cosmy.view;
 import javafx.collections.ObservableList;
 import javafx.scene.control.Tab;
 import org.cosmy.context.IObservableModelRegistry;
-import org.cosmy.controllers.ItemTabController;
+import org.cosmy.controllers.itemtab.ItemTabController;
 import org.cosmy.context.ObservableModelRegistryImpl;
 import org.cosmy.model.CosmosContainer;
 import org.cosmy.model.ObservableModelKey;
