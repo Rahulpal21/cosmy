@@ -1,20 +1,12 @@
 package org.cosmy.controllers.itemtab;
 
-import com.azure.cosmos.CosmosAsyncContainer;
-import com.azure.cosmos.models.CosmosItemResponse;
 import com.azure.cosmos.models.FeedResponse;
-import com.azure.cosmos.models.PartitionKey;
 import com.azure.cosmos.models.SqlQuerySpec;
 import com.azure.cosmos.util.CosmosPagedFlux;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import javafx.application.Platform;
 import javafx.beans.property.adapter.JavaBeanBooleanProperty;
 import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
 import javafx.event.EventType;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
@@ -29,16 +21,9 @@ import org.cosmy.spec.IController;
 import org.cosmy.ui.CosmosItem;
 import org.cosmy.ui.predicates.MouseDoubleClickEvent;
 import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
 
-import java.io.IOException;
-import java.io.Reader;
-import java.io.StringReader;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
-import java.util.UUID;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 public class ItemTabController implements IController {
     private final CosmosContainer container;
@@ -77,14 +62,13 @@ public class ItemTabController implements IController {
     private TextField filterQuery;
 
     private PaginationContext paginationContext;
-
     private ObjectMapper jsonPrinter;
-    private String filterString;
-    private AtomicBoolean filterSet = new AtomicBoolean(false);
     private JavaBeanBooleanProperty nextButtonBinding;
 
     //sub-controllers
     private ItemViewPaneController viewPaneController;
+    private QueryFilterController filterController;
+    private String partitionKey;
 
     public ItemTabController(CosmosContainer container) {
         this.container = container;
@@ -109,24 +93,10 @@ public class ItemTabController implements IController {
         //initialize sub-controllers
         viewPaneController = new ItemViewPaneController(this, container, itemTextArea, newItemButton, saveItemButton, deleteItemButton, validateItemButton, editItemButton);
         viewPaneController.initialize();
+        filterController = new QueryFilterController(this, container, filterQuery, reloadItemsButton, clearFilterButton);
+        filterController.initialize();
 
         //set action handlers for buttons
-        reloadItemsButton.setOnAction(event -> loadItems(Optional.empty()));
-        clearFilterButton.setOnAction(event -> {
-            clearFilter();
-        });
-        filterQuery.setOnMouseClicked(mouseEvent -> {
-            if (!filterSet.get()) {
-                filterQuery.clear();
-                filterQuery.setEditable(true);
-            }
-        });
-        filterQuery.setOnAction(event -> {
-            if (event.getEventType().equals(ActionEvent.ACTION)) {
-                setFilterString();
-            }
-        });
-
         prevPageButton.setOnAction(event -> {
             String prevContinuationToken = paginationContext.getPrevContinuationToken();
             if (prevContinuationToken != null && !prevContinuationToken.isEmpty()) {
@@ -153,35 +123,8 @@ public class ItemTabController implements IController {
         loadItems(Optional.empty());
     }
 
-    private void clearFilter() {
-        this.filterQuery.clear();
-        this.filterQuery.setText("SELECT * FROM c WHERE");
-        this.filterQuery.setEditable(false);
-        this.filterString = null;
-        this.filterSet.set(false);
-        clearPaginationContext();
-        loadItems(Optional.empty());
-    }
-
     private void clearPaginationContext() {
         this.paginationContext.clear();
-    }
-
-    private void setFilterString() {
-        if (validateFilterString(this.filterQuery.getText())) {
-            this.filterString = this.filterQuery.getText();
-            filterSet.set(true);
-            clearPaginationContext();
-            loadItems(Optional.empty());
-        }
-    }
-
-    private boolean validateFilterString(String filterString) {
-        if (filterString != null && !filterString.isEmpty()) {
-            // TODD filter query validation rules
-            return true;
-        }
-        return false;
     }
 
     public void removeItemFromListView(CosmosItem item) {
@@ -189,13 +132,7 @@ public class ItemTabController implements IController {
     }
 
     public void loadItems(Optional<String> continuationToken) {
-        String pKeyPath = container.getContainerDetails().getPartitionKeyPaths().getFirst();
-        String pKeyAttr = pKeyPath.replace("/", "");
-        String readAllQuery = "SELECT c.id, c." + pKeyAttr + " FROM c";
-        if (filterSet.get()) {
-            readAllQuery = readAllQuery.concat(" WHERE ").concat(filterString);
-        }
-        SqlQuerySpec querySpec = new SqlQuerySpec(readAllQuery);
+        SqlQuerySpec querySpec = filterController.getFilterQuery();
         CosmosPagedFlux<Map> pagedFlux = container.getAsyncContainer().queryItems(querySpec, Map.class);
         this.itemListView.getItems().clear();
 
@@ -209,7 +146,7 @@ public class ItemTabController implements IController {
 
         responsePage.take(1).handle((page, synchronousSink) -> {
             page.getElements().stream().forEach(map -> {
-                CosmosItem item = new CosmosItem(map.get(pKeyAttr), (String) map.get("id"));
+                CosmosItem item = new CosmosItem(map.get(container.getPartitionKey()), (String) map.get("id"));
                 item.addEventHandler(EventType.ROOT, event -> {
                     if (MouseDoubleClickEvent.evaluate(event)) {
                         CosmosItem source = (CosmosItem) event.getSource();
