@@ -1,9 +1,8 @@
 package org.cosmy.controllers.itemtab;
 
-import com.azure.cosmos.models.FeedResponse;
-import com.azure.cosmos.models.SqlQuerySpec;
-import com.azure.cosmos.util.CosmosPagedFlux;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.gmail.rahulpal21.cosmospaginator.CosmosPaginable;
+import com.gmail.rahulpal21.cosmospaginator.CosmosPaginationBuilder;
 import javafx.application.Platform;
 import javafx.beans.property.adapter.JavaBeanBooleanProperty;
 import javafx.collections.ObservableList;
@@ -14,16 +13,14 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import org.cosmy.context.IObservableModelRegistry;
 import org.cosmy.context.ObservableModelRegistryImpl;
-import org.cosmy.context.PaginationContext;
 import org.cosmy.model.CosmosContainer;
 import org.cosmy.model.ObservableModelKey;
 import org.cosmy.spec.IController;
 import org.cosmy.ui.CosmosItem;
 import org.cosmy.ui.predicates.MouseDoubleClickEvent;
-import reactor.core.publisher.Flux;
 
 import java.util.Map;
-import java.util.Optional;
+import java.util.stream.Stream;
 
 public class ItemTabController implements IController {
     private final CosmosContainer container;
@@ -61,20 +58,18 @@ public class ItemTabController implements IController {
     @FXML
     private TextField filterQuery;
 
-    private PaginationContext paginationContext;
+    private CosmosPaginable<Map> paginationContext;
     private ObjectMapper jsonPrinter;
     private JavaBeanBooleanProperty nextButtonBinding;
 
     //sub-controllers
     private ItemViewPaneController viewPaneController;
     private QueryFilterController filterController;
-    private String partitionKey;
 
     public ItemTabController(CosmosContainer container) {
         this.container = container;
         this.tabName = generateTabName(container);
         this.jsonPrinter = JsonPrinterFactory.getJsonPrinter();
-        this.paginationContext = new PaginationContext();
     }
 
     private String generateTabName(CosmosContainer container) {
@@ -98,82 +93,55 @@ public class ItemTabController implements IController {
 
         //set action handlers for buttons
         prevPageButton.setOnAction(event -> {
-            String prevContinuationToken = paginationContext.getPrevContinuationToken();
-            if (prevContinuationToken != null && !prevContinuationToken.isEmpty()) {
-                loadItems(Optional.of(prevContinuationToken));
+            if (paginationContext.hasPrev()) {
+                loadItems(paginationContext.prev());
                 nextPageButton.setDisable(false);
             } else {
-                loadItems(Optional.empty());
                 prevPageButton.setDisable(true);
             }
         });
 
         nextPageButton.setOnAction(event -> {
-            String continuationToken = paginationContext.getContinuationToken();
-            if (continuationToken != null && !continuationToken.isEmpty()) {
-                loadItems(Optional.of(continuationToken));
+            if (paginationContext.hasNext()) {
+                loadItems(paginationContext.next());
                 nextPageButton.setDisable(false);
             } else {
-                loadItems(Optional.empty());
                 prevPageButton.setDisable(true);
             }
-            loadItems(Optional.empty());
         });
 
-        loadItems(Optional.empty());
-    }
+        //initialize pagination context
+        paginationContext = new CosmosPaginationBuilder<Map>().build(container.getContainer(), filterController.getFilterQuery(), Map.class);
 
-    private void clearPaginationContext() {
-        this.paginationContext.clear();
+        loadItems();
     }
 
     public void removeItemFromListView(CosmosItem item) {
         Platform.runLater(() -> itemListView.getItems().remove(item));
     }
 
-    public void loadItems(Optional<String> continuationToken) {
-        SqlQuerySpec querySpec = filterController.getFilterQuery();
-        CosmosPagedFlux<Map> pagedFlux = container.getAsyncContainer().queryItems(querySpec, Map.class);
+    public void loadItems() {
+        paginationContext.init();
+        if (paginationContext.hasNext()) {
+            loadItems(paginationContext.next());
+        }
+    }
+
+    public void loadItems(Stream<? super Map> itemStream) {
         this.itemListView.getItems().clear();
 
-        Flux<FeedResponse<Map>> responsePage = null;
-
-        if (continuationToken.isEmpty()) {
-            responsePage = pagedFlux.byPage(paginationContext.getPreferredPageLength());
-        } else {
-            responsePage = pagedFlux.byPage(continuationToken.get(), paginationContext.getPreferredPageLength());
-        }
-
-        responsePage.take(1).handle((page, synchronousSink) -> {
-            page.getElements().stream().forEach(map -> {
-                CosmosItem item = new CosmosItem(map.get(container.getPartitionKey()), (String) map.get("id"));
-                item.addEventHandler(EventType.ROOT, event -> {
-                    if (MouseDoubleClickEvent.evaluate(event)) {
-                        CosmosItem source = (CosmosItem) event.getSource();
-                        viewPaneController.loadItem(source, container);
-                    }
-                });
-                Platform.runLater(() -> this.itemListView.getItems().add(item));
+        itemStream.forEach(map -> {
+            CosmosItem item = new CosmosItem(
+                    ((Map) map).get(container.getPartitionKey()), (String) ((Map) map).get("id"));
+            item.addEventHandler(EventType.ROOT, event -> {
+                if (MouseDoubleClickEvent.evaluate(event)) {
+                    CosmosItem source = (CosmosItem) event.getSource();
+                    viewPaneController.loadItem(source, container);
+                }
             });
+            Platform.runLater(() -> this.itemListView.getItems().add(item));
+        });
 
-            //set pagination details for next page
-            if (page.getContinuationToken() == null || "".equalsIgnoreCase(page.getContinuationToken())) {
-                System.out.println("continuation token is null !!");
-//                paginationContext.setNextButtonDisabled(true);
-                nextPageButton.setDisable(true);
-            } else {
-                paginationContext.setContinuationToken(page.getContinuationToken());
-                paginationContext.setNextButtonDisabled(false);
-                nextPageButton.setDisable(false);
-                prevPageButton.setDisable(false);
-            }
-
-        }).doFinally(signalType -> {
-            progressBar.setVisible(false);
-        }).doOnError(throwable -> {
-            System.out.println(throwable);
-        }).subscribe();
-        // TODO error handling
     }
 
     public void showErrorDialog(String errorMessage) {
