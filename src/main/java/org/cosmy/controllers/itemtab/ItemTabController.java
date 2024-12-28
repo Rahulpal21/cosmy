@@ -139,7 +139,10 @@ public class ItemTabController implements IController {
                     viewPaneController.loadItem(source, container);
                 }
             });
-            Platform.runLater(() -> this.itemListView.getItems().add(item));
+            Platform.runLater(() -> {
+                this.itemListView.getItems().add(item);
+                this.progressBar.setVisible(false);
+            });
         });
 
     }
