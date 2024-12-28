@@ -141,6 +141,7 @@ public class ItemTabController implements IController {
             });
             Platform.runLater(() -> {
                 this.itemListView.getItems().add(item);
+                //TODO take this out of inner loop
                 this.progressBar.setVisible(false);
             });
         });
