@@ -93,21 +93,11 @@ public class ItemTabController implements IController {
 
         //set action handlers for buttons
         prevPageButton.setOnAction(event -> {
-            if (paginationContext.hasPrev()) {
-                loadItems(paginationContext.prev());
-                nextPageButton.setDisable(false);
-            } else {
-                prevPageButton.setDisable(true);
-            }
+            loadItems(paginationContext.prev());
         });
 
         nextPageButton.setOnAction(event -> {
-            if (paginationContext.hasNext()) {
-                loadItems(paginationContext.next());
-                nextPageButton.setDisable(false);
-            } else {
-                prevPageButton.setDisable(true);
-            }
+            loadItems(paginationContext.next());
         });
 
         //initialize pagination context
@@ -125,6 +115,11 @@ public class ItemTabController implements IController {
         if (paginationContext.hasNext()) {
             loadItems(paginationContext.next());
         }
+    }
+
+    private void refreshPaginationButtons() {
+        nextPageButton.setDisable(!paginationContext.hasNext());
+        prevPageButton.setDisable(!paginationContext.hasPrev());
     }
 
     public void loadItems(Stream<? super Map> itemStream) {
@@ -146,6 +141,7 @@ public class ItemTabController implements IController {
             });
         });
 
+        refreshPaginationButtons();
     }
 
     public void showErrorDialog(String errorMessage) {
