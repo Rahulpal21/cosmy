@@ -49,6 +49,11 @@
             <artifactId>ikonli-antdesignicons-pack</artifactId>
             <version>12.3.1</version>
         </dependency>
+        <dependency>
+            <groupId>com.gmail.rahulpal21</groupId>
+            <artifactId>cosmos-paginator</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>
     </dependencies>
 
     <dependencyManagement>

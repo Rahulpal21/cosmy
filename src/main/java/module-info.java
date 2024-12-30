@@ -8,6 +8,8 @@ module org.cosmy {
     requires org.kordamp.ikonli.material2;
     requires org.kordamp.ikonli.antdesignicons;
     requires org.kordamp.ikonli.remixicon;
+    requires cosmos.paginator;
+    requires org.jetbrains.annotations;
 
     opens org.cosmy to javafx.fxml;
     exports org.cosmy;
