@@ -15,6 +15,7 @@ import org.cosmy.context.IObservableModelRegistry;
 import org.cosmy.context.ObservableModelRegistryImpl;
 import org.cosmy.model.CosmosContainer;
 import org.cosmy.model.ObservableModelKey;
+import org.cosmy.model.Preferences;
 import org.cosmy.spec.IController;
 import org.cosmy.ui.CosmosItem;
 import org.cosmy.ui.predicates.MouseDoubleClickEvent;
@@ -101,8 +102,11 @@ public class ItemTabController implements IController {
         });
 
         //initialize pagination context
-        paginationContext = new CosmosPaginationBuilder<Map>().build(container.getContainer(), filterController.getFilterQuery(), Map.class);
-
+        CosmosPaginationBuilder<Map> paginationBuilder = new CosmosPaginationBuilder<>();
+        if(Preferences.getInstance().getPageLength()>=0){
+            paginationBuilder.setPageSize(Preferences.getInstance().getPageLength());
+        }
+        paginationContext = paginationBuilder.build(container.getContainer(), filterController.getFilterQuery(), Map.class);
         loadItems();
     }
 
