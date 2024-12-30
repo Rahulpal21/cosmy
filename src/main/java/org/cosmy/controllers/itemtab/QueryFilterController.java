@@ -6,6 +6,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import org.cosmy.model.CosmosContainer;
 import org.cosmy.spec.IController;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -52,11 +53,18 @@ public class QueryFilterController implements IController {
     }
 
     public SqlQuerySpec getFilterQuery() {
-        String readAllQuery = "SELECT c.id, c." + container.getPartitionKey() + " FROM c";
+        String readAllQuery = "SELECT c.id" + resolvePKeySelectClause() + " FROM c";
         if (filterSet.get()) {
             readAllQuery = readAllQuery.concat(" WHERE ").concat(filterString);
         }
         return new SqlQuerySpec(readAllQuery);
+    }
+
+    private @NotNull String resolvePKeySelectClause() {
+        if(container.getPartitionKey() == null || "".equalsIgnoreCase(container.getPartitionKey()) || "id".equalsIgnoreCase(container.getPartitionKey())){
+            return "";
+        }
+        return ", c." + container.getPartitionKey();
     }
 
     private void clearFilter() {
