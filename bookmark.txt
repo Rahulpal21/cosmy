@@ -19,7 +19,7 @@ https://kordamp.org/ikonli/cheat-sheet-materialdesign2.html
 scope >> https://kordamp.org/ikonli/cheat-sheet-octicons.html
 accounts >> https://kordamp.org/ikonli/cheat-sheet-remixicon.html
 https://kordamp.org/ikonli/cheat-sheet-themify.html
-https://kordamp.org/ikonli/cheat-sheet-antdesignicons.html#_outlined_boxiconsoutlined
+https://kordamp.org/ikonli/cheat-sheet-antdesignicons.html
 https://kordamp.org/ikonli/cheat-sheet-dashicons.html
 https://kordamp.org/ikonli/cheat-sheet-simpleicons.html
 
@@ -29,4 +29,4 @@ bytecode editor: https://github.com/Col-E/Recaf
 https://lmax-exchange.github.io/disruptor/disruptor.html
 
 json schema validation against schema https://github.com/erosb/json-sKema
-rich text library for text area Minmhttps://github.com/FXMisc/RichTextFX
+rich text library for text area Minm https://github.com/FXMisc/RichTextFX

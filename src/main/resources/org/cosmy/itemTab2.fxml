@@ -2,35 +2,70 @@
 
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
+<?import org.kordamp.ikonli.javafx.FontIcon?>
 <Tab id="uniqueTabName" text="" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:id="itemTab">
     <SplitPane fx:id="splitPane" dividerPositions="0.5">
         <StackPane fx:id="stackPane">
             <VBox fx:id="itemListVBox">
                 <ToolBar prefHeight="40.0" prefWidth="200.0" VBox.vgrow="NEVER">
-                    <Button fx:id="reloadItemsButton" mnemonicParsing="false" text="Reload"/>
-                    <Button fx:id="clearFilterButton" mnemonicParsing="false" text="Clear"/>
+                    <Button fx:id="reloadItemsButton" mnemonicParsing="false" text="Reload">
+                        <graphic>
+                            <FontIcon iconLiteral="anto-reload"/>
+                        </graphic>
+                    </Button>
+                    <Button fx:id="clearFilterButton" mnemonicParsing="false" text="Clear">
+                        <graphic>
+                            <FontIcon iconLiteral="anto-close"/>
+                        </graphic>
+                    </Button>
                 </ToolBar>
                 <TextField text="SELECT * FROM WHERE" editable="false" fx:id="filterQuery"
                            VBox.vgrow="NEVER"/>
                 <ListView id="itemList" fx:id="itemListView" accessibleText="This is accessible text"
                           VBox.vgrow="ALWAYS"/>
                 <ToolBar prefHeight="40.0" prefWidth="200.0" VBox.vgrow="NEVER">
-                    <Button fx:id="prevPageButton" disable="true" mnemonicParsing="false"
-                            text="Prev"/>
-                    <Button fx:id="nextPageButton" disable="true" mnemonicParsing="false"
-                            text="Next"/>
+                    <Button fx:id="prevPageButton" disable="true" mnemonicParsing="false">
+                        <graphic>
+                            <FontIcon iconLiteral="anto-double-left"/>
+                        </graphic>
+                    </Button>
+                    <Button fx:id="nextPageButton" disable="true" mnemonicParsing="false">
+                        <graphic>
+                            <FontIcon iconLiteral="anto-double-right"/>
+                        </graphic>
+                    </Button>
                 </ToolBar>
             </VBox>
             <ProgressBar fx:id="progressBar"/>
         </StackPane>
         <VBox>
             <ToolBar prefHeight="40.0" prefWidth="200.0" VBox.vgrow="NEVER">
-                <Button fx:id="newItemButton" mnemonicParsing="false" text="New"/>
-                <Button fx:id="editItemButton" mnemonicParsing="false" text="Edit" disable="true"/>
+                <Button fx:id="newItemButton" mnemonicParsing="false" text="New">
+                    <graphic>
+                        <FontIcon iconLiteral="remixal-add-line"/>
+                    </graphic>
+                </Button>
+                <Button fx:id="editItemButton" mnemonicParsing="false" text="Edit" disable="true">
+                    <graphic>
+                        <FontIcon iconLiteral="remixal-edit-2-line"/>
+                    </graphic>
+                </Button>
                 <Button fx:id="validateItemButton" mnemonicParsing="false" text="Validate"
-                        disable="true"/>
-                <Button fx:id="saveItemButton" mnemonicParsing="false" text="Save" disable="true"/>
-                <Button fx:id="deleteItemButton" mnemonicParsing="false" text="Delete" disable="true"/>
+                        disable="true">
+                    <graphic>
+                        <FontIcon iconLiteral="remixal-check-double-line"/>
+                    </graphic>
+                </Button>
+                <Button fx:id="saveItemButton" mnemonicParsing="false" text="Save" disable="true">
+                    <graphic>
+                        <FontIcon iconLiteral="remixmz-save-line"/>
+                    </graphic>
+                </Button>
+                <Button fx:id="deleteItemButton" mnemonicParsing="false" text="Delete" disable="true">
+                    <graphic>
+                        <FontIcon iconLiteral="remixal-delete-bin-line"/>
+                    </graphic>
+                </Button>
             </ToolBar>
             <TextArea id="itemTextArea" fx:id="itemTextArea" accessibleHelp="This is accessible help"
                       accessibleText="This is accessible text" promptText="say something"
