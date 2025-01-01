@@ -30,7 +30,9 @@ public class QueryFilterController implements IController {
 
     @Override
     public void initialize() {
-        reloadItemsButton.setOnAction(event -> parentController.loadItems());
+        reloadItemsButton.setOnAction(event -> {
+            parentController.reloadItems();
+        });
 
         clearFilterButton.setOnAction(event -> {
             clearFilter();

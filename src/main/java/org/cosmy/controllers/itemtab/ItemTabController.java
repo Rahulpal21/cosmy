@@ -101,13 +101,17 @@ public class ItemTabController implements IController {
             loadItems(paginationContext.next());
         });
 
+        paginationContext = createPaginationContext();
+        loadItems();
+    }
+
+    private CosmosPaginable<Map> createPaginationContext() {
         //initialize pagination context
         CosmosPaginationBuilder<Map> paginationBuilder = new CosmosPaginationBuilder<>();
         if(Preferences.getInstance().getPageLength()>=0){
             paginationBuilder.setPageSize(Preferences.getInstance().getPageLength());
         }
-        paginationContext = paginationBuilder.build(container.getContainer(), filterController.getFilterQuery(), Map.class);
-        loadItems();
+        return paginationBuilder.build(container.getContainer(), filterController.getFilterQuery(), Map.class);
     }
 
     public void removeItemFromListView(CosmosItem item) {
@@ -158,4 +162,8 @@ public class ItemTabController implements IController {
         dialog.showAndWait();
     }
 
+    public void reloadItems() {
+        paginationContext = createPaginationContext();
+        loadItems();
+    }
 }
