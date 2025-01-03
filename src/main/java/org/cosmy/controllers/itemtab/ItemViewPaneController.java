@@ -12,6 +12,7 @@ import javafx.scene.control.TextArea;
 import org.cosmy.model.CosmosContainer;
 import org.cosmy.spec.IController;
 import org.cosmy.ui.CosmosItem;
+import org.cosmy.utils.CosmosItemAttributes;
 import reactor.core.publisher.Mono;
 
 import java.io.IOException;
@@ -145,7 +146,15 @@ public class ItemViewPaneController implements IController {
         String itemText = this.itemTextArea.getText();
         try (Reader reader = new StringReader(itemText)) {
             JsonNode jsonNode = jsonPrinter.readTree(reader);
-            Mono<CosmosItemResponse<JsonNode>> response = container.getAsyncContainer().upsertItem(jsonNode);
+            Optional<String> id = extractId(jsonNode);
+            String pKey = extractPartitionKey(jsonNode);
+            Mono<CosmosItemResponse<JsonNode>> response;
+            if(id.isPresent()){
+                response = container.getAsyncContainer().replaceItem(jsonNode, id.get(), new PartitionKey(pKey));
+            }else {
+                response = container.getAsyncContainer().upsertItem(jsonNode);
+            }
+
             response.handle((createResponse, synchronousSink) -> {
                 //TODO handle diagnostic information if enabled through preferences
                 System.out.println(createResponse.getStatusCode());
@@ -157,6 +166,18 @@ public class ItemViewPaneController implements IController {
         } catch (IOException e) {
             parentController.showErrorDialog(e.getMessage());
         }
+    }
+
+    private String extractPartitionKey(JsonNode jsonNode) {
+        return jsonNode.get(container.getPartitionKey()).textValue();
+    }
+
+    private Optional<String> extractId(JsonNode jsonNode) {
+        JsonNode idNode = jsonNode.get(CosmosItemAttributes.ID);
+        if(idNode != null && !idNode.textValue().isEmpty() ){
+            return Optional.of(idNode.textValue());
+        }
+        return Optional.empty();
     }
 
     public void loadItem(CosmosItem item, CosmosContainer container) {
