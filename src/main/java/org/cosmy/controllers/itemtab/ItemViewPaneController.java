@@ -161,7 +161,7 @@ public class ItemViewPaneController implements IController {
             }).doOnSuccess(object -> {
                 //TODO success dialig or status bar/activity pane message
             }).doOnError(throwable -> {
-                parentController.showErrorDialog(throwable.getMessage());
+                Platform.runLater(() -> parentController.showErrorDialog(throwable.getMessage()));
             }).subscribe();
         } catch (IOException e) {
             parentController.showErrorDialog(e.getMessage());

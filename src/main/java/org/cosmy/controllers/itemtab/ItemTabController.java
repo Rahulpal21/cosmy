@@ -155,6 +155,9 @@ public class ItemTabController implements IController {
     public void showErrorDialog(String errorMessage) {
         //TODO take error dialog to a common utility across whole project
         Dialog<String> dialog = new Dialog<>();
+        dialog.setResizable(true);
+        dialog.setHeight(180);
+        dialog.setWidth(500);
         dialog.setTitle("Error");
         ButtonType okButton = new ButtonType("Ok", ButtonBar.ButtonData.OK_DONE);
         dialog.setContentText(errorMessage);
