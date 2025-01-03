@@ -39,6 +39,7 @@ public class ItemsTab implements IVisualElement {
             IObservableModelRegistry modelRegistry = ObservableModelRegistryImpl.getInstance();
             ObservableList<Tab> tabsList = (ObservableList<Tab>) modelRegistry.lookup(ObservableModelKey.TABS);
             tabsList.add(tab);
+            tab.getTabPane().getSelectionModel().select(tab);
         } catch (IOException e) {
             throw new CosmyException(e.getMessage(), e);
         }
