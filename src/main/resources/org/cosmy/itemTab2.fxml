@@ -3,7 +3,6 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import org.kordamp.ikonli.javafx.FontIcon?>
-<?import org.fxmisc.richtext.CodeArea?>
 <Tab id="uniqueTabName" text="" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:id="itemTab">
     <SplitPane fx:id="splitPane" dividerPositions="0.5">
         <StackPane fx:id="stackPane">
@@ -68,8 +67,9 @@
                     </graphic>
                 </Button>
             </ToolBar>
-            <CodeArea id="itemTextArea" fx:id="itemTextArea" accessibleHelp="This is accessible help"
-                      accessibleText="This is accessible text" text="Helllo hello " VBox.vgrow="ALWAYS"/>
+            <TextArea id="itemTextArea" fx:id="itemTextArea" accessibleHelp="This is accessible help"
+                      accessibleText="This is accessible text" promptText="say something"
+                      text="Helllo hello " VBox.vgrow="ALWAYS"/>
         </VBox>
     </SplitPane>
 </Tab>

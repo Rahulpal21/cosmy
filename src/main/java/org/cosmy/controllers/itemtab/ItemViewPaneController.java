@@ -13,7 +13,6 @@ import org.cosmy.model.CosmosContainer;
 import org.cosmy.spec.IController;
 import org.cosmy.ui.CosmosItem;
 import org.cosmy.utils.CosmosItemAttributes;
-import org.fxmisc.richtext.CodeArea;
 import reactor.core.publisher.Mono;
 
 import java.io.IOException;
@@ -27,7 +26,7 @@ import java.util.UUID;
 public class ItemViewPaneController implements IController {
     private ItemTabController parentController;
     private CosmosContainer container;
-    private final CodeArea itemTextArea;
+    private final TextArea itemTextArea;
     private final Button newItemButton;
     private final Button saveItemButton;
     private final Button deleteItemButton;
@@ -36,7 +35,7 @@ public class ItemViewPaneController implements IController {
 
     private final ObjectMapper jsonPrinter;
 
-    public ItemViewPaneController(ItemTabController parentController, CosmosContainer container, CodeArea itemTextArea, Button newItemButton, Button saveItemButton, Button deleteItemButton, Button validateItemButton, Button editItemButton) {
+    public ItemViewPaneController(ItemTabController parentController, CosmosContainer container, TextArea itemTextArea, Button newItemButton, Button saveItemButton, Button deleteItemButton, Button validateItemButton, Button editItemButton) {
         this.parentController = parentController;
         this.container = container;
         this.itemTextArea = itemTextArea;
@@ -102,7 +101,7 @@ public class ItemViewPaneController implements IController {
             Platform.runLater(() -> {
                 clearItemReadingPane();
                 disableDeleteButton();
-                this.itemTextArea.appendText(template);
+                this.itemTextArea.setText(template);
                 this.itemTextArea.setEditable(true);
                 this.validateItemButton.setDisable(true);
             });
@@ -188,11 +187,9 @@ public class ItemViewPaneController implements IController {
         // TODO support mutli-attribute partition keys
         asyncContainer.readItem(item.getItemId(), new PartitionKey(item.getPartitionKey()), Map.class).handle((response, synchronousSink1) -> {
             try {
-
-                Map rawContent = response.getItem();
-                String asString = jsonPrinter.writeValueAsString(rawContent);
+                String asString = jsonPrinter.writeValueAsString(response.getItem());
                 Platform.runLater(() -> {
-                    itemTextArea.appendText(asString);
+                    itemTextArea.setText(asString);
                     itemTextArea.setEditable(false);
                     validateItemButton.setDisable(true);
                     saveItemButton.setDisable(true);
