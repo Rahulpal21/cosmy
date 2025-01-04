@@ -30,3 +30,7 @@ https://lmax-exchange.github.io/disruptor/disruptor.html
 
 json schema validation against schema https://github.com/erosb/json-sKema
 rich text library for text area Minm https://github.com/FXMisc/RichTextFX
+https://controlsfx.github.io/
+https://github.com/AlmasB/FXGL
+https://github.com/HanSolo/tilesfx
+https://github.com/effad/ValidatorFX

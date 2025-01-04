@@ -10,6 +10,7 @@ module org.cosmy {
     requires org.kordamp.ikonli.remixicon;
     requires cosmos.paginator;
     requires org.jetbrains.annotations;
+    requires org.fxmisc.richtext;
 
     opens org.cosmy to javafx.fxml;
     exports org.cosmy;
