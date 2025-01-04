@@ -10,6 +10,7 @@ module org.cosmy {
     requires org.kordamp.ikonli.remixicon;
     requires cosmos.paginator;
     requires org.jetbrains.annotations;
+    requires org.fxmisc.richtext;
 
     opens org.cosmy to javafx.fxml;
     exports org.cosmy;
@@ -17,6 +18,8 @@ module org.cosmy {
     opens org.cosmy.model to javafx.fxml;
     exports org.cosmy.ui;
     opens org.cosmy.ui to javafx.fxml;
+    exports org.cosmy.view;
+    opens org.cosmy.view to javafx.fxml;
     exports org.cosmy.controllers;
     opens org.cosmy.controllers to javafx.fxml;
     exports org.cosmy.context;

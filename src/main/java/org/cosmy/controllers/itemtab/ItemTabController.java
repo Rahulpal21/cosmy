@@ -19,6 +19,7 @@ import org.cosmy.model.Preferences;
 import org.cosmy.spec.IController;
 import org.cosmy.ui.CosmosItem;
 import org.cosmy.ui.predicates.MouseDoubleClickEvent;
+import org.cosmy.view.JsonTextArea;
 
 import java.util.Map;
 import java.util.stream.Stream;
@@ -35,7 +36,7 @@ public class ItemTabController implements IController {
     @FXML
     private ProgressBar progressBar;
     @FXML
-    private TextArea itemTextArea;
+    private JsonTextArea itemTextArea;
     @FXML
     private VBox itemListVBox;
     @FXML

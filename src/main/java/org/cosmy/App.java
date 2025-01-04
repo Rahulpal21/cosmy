@@ -23,6 +23,7 @@ public class App extends Application {
     @Override
     public void start(Stage stage) throws IOException {
         scene = new Scene(loadFXML("main2"));
+        scene.getStylesheets().add("json-format.css");
         mainStage = stage;
         stage.setScene(scene);
         stage.getIcons().add(new Image(Objects.requireNonNull(this.getClass().getResourceAsStream("/icons/telescope.png"))));
