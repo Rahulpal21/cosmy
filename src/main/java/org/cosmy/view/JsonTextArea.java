@@ -62,7 +62,6 @@ public class JsonTextArea extends CodeArea {
     }
 
     public String getText() {
-        //TODO styled implementation
-        return "";
+        return super.getText();
     }
 }
