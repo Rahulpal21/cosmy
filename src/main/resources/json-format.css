@@ -1,4 +1,5 @@
 .key {
+    -fx-tab-size: 2;
     -fx-fill: purple;
     -fx-font-family: segoeui;
 }
@@ -6,3 +7,4 @@
     -fx-fill: blue;
     -fx-font-family: segoeui;
 }
+
