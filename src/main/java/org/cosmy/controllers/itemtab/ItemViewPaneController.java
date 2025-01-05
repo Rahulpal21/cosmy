@@ -8,11 +8,11 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import javafx.application.Platform;
 import javafx.scene.control.Button;
-import javafx.scene.control.TextArea;
 import org.cosmy.model.CosmosContainer;
 import org.cosmy.spec.IController;
 import org.cosmy.ui.CosmosItem;
 import org.cosmy.utils.CosmosItemAttributes;
+import org.cosmy.view.JsonTextArea;
 import reactor.core.publisher.Mono;
 
 import java.io.IOException;
@@ -26,7 +26,7 @@ import java.util.UUID;
 public class ItemViewPaneController implements IController {
     private ItemTabController parentController;
     private CosmosContainer container;
-    private final TextArea itemTextArea;
+    private final JsonTextArea itemTextArea;
     private final Button newItemButton;
     private final Button saveItemButton;
     private final Button deleteItemButton;
@@ -35,7 +35,7 @@ public class ItemViewPaneController implements IController {
 
     private final ObjectMapper jsonPrinter;
 
-    public ItemViewPaneController(ItemTabController parentController, CosmosContainer container, TextArea itemTextArea, Button newItemButton, Button saveItemButton, Button deleteItemButton, Button validateItemButton, Button editItemButton) {
+    public ItemViewPaneController(ItemTabController parentController, CosmosContainer container, JsonTextArea itemTextArea, Button newItemButton, Button saveItemButton, Button deleteItemButton, Button validateItemButton, Button editItemButton) {
         this.parentController = parentController;
         this.container = container;
         this.itemTextArea = itemTextArea;
@@ -98,13 +98,13 @@ public class ItemViewPaneController implements IController {
         try {
             String template = getNewItemTemplate();
             //TODO combine all in one runnable for platform thread
-            Platform.runLater(() -> {
+//            Platform.runLater(() -> {
                 clearItemReadingPane();
                 disableDeleteButton();
                 this.itemTextArea.setText(template);
                 this.itemTextArea.setEditable(true);
                 this.validateItemButton.setDisable(true);
-            });
+//            });
         } catch (JsonProcessingException e) {
             //TODO error dialog
             System.out.println(e);
@@ -149,9 +149,9 @@ public class ItemViewPaneController implements IController {
             Optional<String> id = extractId(jsonNode);
             String pKey = extractPartitionKey(jsonNode);
             Mono<CosmosItemResponse<JsonNode>> response;
-            if(id.isPresent()){
+            if (id.isPresent()) {
                 response = container.getAsyncContainer().replaceItem(jsonNode, id.get(), new PartitionKey(pKey));
-            }else {
+            } else {
                 response = container.getAsyncContainer().upsertItem(jsonNode);
             }
 
@@ -174,7 +174,7 @@ public class ItemViewPaneController implements IController {
 
     private Optional<String> extractId(JsonNode jsonNode) {
         JsonNode idNode = jsonNode.get(CosmosItemAttributes.ID);
-        if(idNode != null && !idNode.textValue().isEmpty() ){
+        if (idNode != null && !idNode.textValue().isEmpty()) {
             return Optional.of(idNode.textValue());
         }
         return Optional.empty();
@@ -189,7 +189,12 @@ public class ItemViewPaneController implements IController {
             try {
                 String asString = jsonPrinter.writeValueAsString(response.getItem());
                 Platform.runLater(() -> {
-                    itemTextArea.setText(asString);
+                    try {
+                        itemTextArea.setText(asString);
+                    } catch (JsonProcessingException e) {
+                        throw new RuntimeException(e);
+                        //TODO handle excepiton and route to error dialog
+                    }
                     itemTextArea.setEditable(false);
                     validateItemButton.setDisable(true);
                     saveItemButton.setDisable(true);

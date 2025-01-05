@@ -1,0 +1,10 @@
+.key {
+    -fx-tab-size: 2;
+    -fx-fill: purple;
+    -fx-font-family: segoeui;
+}
+.value {
+    -fx-fill: blue;
+    -fx-font-family: segoeui;
+}
+
