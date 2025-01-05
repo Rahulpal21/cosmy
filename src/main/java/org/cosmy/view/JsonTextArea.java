@@ -28,7 +28,13 @@ public class JsonTextArea extends CodeArea {
             appendAttributeValue(nodeEntry.getValue());
             appendNewline();
         });
+        readactLastComma();
         appendJsonEndParenthesis();
+    }
+
+    private void readactLastComma() {
+        int prevParagraph = getCurrentParagraph()-1;
+        this.deleteText(prevParagraph,getParagraphLength(prevParagraph)-1,prevParagraph, getParagraphLength(prevParagraph));
     }
 
     public void setText(String text) throws JsonProcessingException {
@@ -54,7 +60,8 @@ public class JsonTextArea extends CodeArea {
     }
 
     private void appendAttributeValue(JsonNode value) {
-        this.append(SINGLE_QUOTE + value.asText("") + SINGLE_QUOTE, STYLE_VALUE);
+        this.append(value.toString(), STYLE_VALUE);
+        this.append(COMMA, STYLE_KEY);
     }
 
     private void appendAttributeKey(String key) {
