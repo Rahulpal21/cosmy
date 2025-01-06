@@ -1,6 +1,7 @@
 package org.cosmy.controllers.itemtab;
 
 import com.azure.cosmos.CosmosAsyncContainer;
+import com.azure.cosmos.models.CosmosItemRequestOptions;
 import com.azure.cosmos.models.CosmosItemResponse;
 import com.azure.cosmos.models.PartitionKey;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -99,11 +100,11 @@ public class ItemViewPaneController implements IController {
             String template = getNewItemTemplate();
             //TODO combine all in one runnable for platform thread
 //            Platform.runLater(() -> {
-                clearItemReadingPane();
-                disableDeleteButton();
-                this.itemTextArea.setText(template);
-                this.itemTextArea.setEditable(true);
-                this.validateItemButton.setDisable(true);
+            clearItemReadingPane();
+            disableDeleteButton();
+            this.itemTextArea.setText(template);
+            this.itemTextArea.setEditable(true);
+            this.validateItemButton.setDisable(true);
 //            });
         } catch (JsonProcessingException e) {
             //TODO error dialog
@@ -146,13 +147,13 @@ public class ItemViewPaneController implements IController {
         String itemText = this.itemTextArea.getText();
         try (Reader reader = new StringReader(itemText)) {
             JsonNode jsonNode = jsonPrinter.readTree(reader);
-            Optional<String> id = extractId(jsonNode);
             String pKey = extractPartitionKey(jsonNode);
             Mono<CosmosItemResponse<JsonNode>> response;
-            if (id.isPresent()) {
-                response = container.getAsyncContainer().replaceItem(jsonNode, id.get(), new PartitionKey(pKey));
+            if (isNewItem(jsonNode)) {
+                response = container.getAsyncContainer().createItem(jsonNode, new PartitionKey(pKey), new CosmosItemRequestOptions());
             } else {
-                response = container.getAsyncContainer().upsertItem(jsonNode);
+                Optional<String> id = extractId(jsonNode);
+                response = container.getAsyncContainer().replaceItem(jsonNode, id.get(), new PartitionKey(pKey));
             }
 
             response.handle((createResponse, synchronousSink) -> {
@@ -178,6 +179,11 @@ public class ItemViewPaneController implements IController {
             return Optional.of(idNode.textValue());
         }
         return Optional.empty();
+    }
+
+    private boolean isNewItem(JsonNode jsonNode) {
+        JsonNode etagNode = jsonNode.get(CosmosItemAttributes.ETAG);
+        return etagNode == null || etagNode.textValue() == null || "".equalsIgnoreCase(etagNode.textValue());
     }
 
     public void loadItem(CosmosItem item, CosmosContainer container) {
