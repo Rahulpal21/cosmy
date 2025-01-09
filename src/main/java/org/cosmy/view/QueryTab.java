@@ -27,7 +27,6 @@ public class QueryTab implements IVisualElement {
     public QueryTab(CosmosContainer container) {
         this.container = container;
         controller = new QueryTabController(container);
-
     }
 
     /**

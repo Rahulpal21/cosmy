@@ -8,25 +8,25 @@
                orientation="VERTICAL">
         <VBox>
             <HBox>
-                <HBox prefHeight="40.0" spacing="10" alignment="CENTER_LEFT" HBox.hgrow="ALWAYS">
+                <HBox fx:id="queryPaneToolbarLeft" prefHeight="40.0" spacing="10" alignment="CENTER_LEFT" HBox.hgrow="ALWAYS">
                     <Label accessibleText="Query Pane" text="Query Pane"/>
                 </HBox>
-                <HBox prefHeight="40.0" spacing="10" alignment="CENTER_RIGHT" HBox.hgrow="ALWAYS">
+                <HBox fx:id="queryPaneToolbarRight" prefHeight="40.0" spacing="10" alignment="CENTER_RIGHT" HBox.hgrow="ALWAYS">
                     <Label text="Running Status..."/>
                 </HBox>
             </HBox>
-            <TextArea fx:id="queryTextArea" VBox.vgrow="ALWAYS"/>
+            <TextArea fx:id="queryPaneEditor" VBox.vgrow="ALWAYS"/>
         </VBox>
         <VBox>
             <HBox>
-                <HBox prefHeight="40" alignment="CENTER_LEFT" HBox.hgrow="ALWAYS">
+                <HBox fx:id="resultsPaneToolbarLeft" prefHeight="40" alignment="CENTER_LEFT" HBox.hgrow="ALWAYS">
                     <Label text="Results" HBox.hgrow="NEVER"/>
                 </HBox>
-                <HBox prefHeight="40" alignment="CENTER_RIGHT" HBox.hgrow="ALWAYS">
+                <HBox fx:id="resultsPaneToolbarRight" prefHeight="40" alignment="CENTER_RIGHT" HBox.hgrow="ALWAYS">
                     <ToolBar prefHeight="40.0" HBox.hgrow="NEVER">
-                        <ToggleButton mnemonicParsing="false" text="Collapse"/>
-                        <ToggleButton mnemonicParsing="false" text="Wrap"/>
-                        <ToggleButton mnemonicParsing="false" text="Json"/>
+                        <ToggleButton fx:id="resultsCollapseButton" mnemonicParsing="false" text="Collapse"/>
+                        <ToggleButton fx:id="resultsCollapseWrap" mnemonicParsing="false" text="Wrap"/>
+                        <ToggleButton fx:id="resultsCollapseJsonTableToggleButton" mnemonicParsing="false" text="Json"/>
                     </ToolBar>
                 </HBox>
             </HBox>

@@ -3,15 +3,31 @@ package org.cosmy.controllers.itemtab;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.Tab;
+import javafx.scene.control.TextArea;
+import javafx.scene.layout.HBox;
 import org.cosmy.context.IObservableModelRegistry;
 import org.cosmy.context.ObservableModelRegistryImpl;
 import org.cosmy.model.CosmosContainer;
 import org.cosmy.model.ObservableModelKey;
 import org.cosmy.spec.IController;
+import org.w3c.dom.Text;
 
 public class QueryTabController implements IController {
     private final CosmosContainer container;
     private final String tabName;
+
+    @FXML
+    private HBox queryPaneToolbarLeft;
+    @FXML
+    private HBox queryPaneToolbarRight;
+    @FXML
+    private TextArea queryPaneEditor;
+    @FXML
+    private HBox resultsPaneToolbarLeft;
+    @FXML
+    private HBox resultsPaneToolbarRight;
+    @FXML
+    private TextArea resultsPane;
 
     public QueryTabController(CosmosContainer container) {
         this.container = container;
