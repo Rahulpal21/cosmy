@@ -2,8 +2,10 @@ package org.cosmy.controllers;
 
 import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
+import javafx.event.ActionEvent;
 import javafx.event.EventType;
 import javafx.scene.Node;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.ProgressIndicator;
 import javafx.scene.control.TreeItem;
 import javafx.scene.input.MouseEvent;
@@ -14,10 +16,7 @@ import org.cosmy.model.CosmosContainer;
 import org.cosmy.model.ObservableModelKey;
 import org.cosmy.spec.IController;
 import org.cosmy.utils.MessageConstants;
-import org.cosmy.view.AccountsTreeItemFactory;
-import org.cosmy.view.AccountsTreeLevels;
-import org.cosmy.view.AccountsTreeNode;
-import org.cosmy.view.ItemsTab;
+import org.cosmy.view.*;
 
 public class AccountsViewController implements IController {
 
@@ -104,5 +103,12 @@ public class AccountsViewController implements IController {
     @Override
     public void initialize() {
 
+    }
+
+    public static void launchQueryTab(ActionEvent event) {
+        MenuItem eventSource = (MenuItem) event.getSource();
+        CosmosContainer container = (CosmosContainer) eventSource.getUserData();
+        new QueryTab(container).initialize();
+        System.out.println("query tab launched");
     }
 }

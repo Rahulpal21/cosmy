@@ -2,6 +2,8 @@ package org.cosmy.model;
 
 import com.azure.cosmos.CosmosAsyncContainer;
 import javafx.event.EventTarget;
+import javafx.scene.control.ContextMenu;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.TreeItem;
 import org.cosmy.controllers.AccountsViewController;
 import org.cosmy.ui.ContainerDetails;
@@ -61,8 +63,18 @@ public class CosmosContainer implements Serializable {
 
     public TreeItem<AccountsTreeNode> generateView() {
         TreeItem<AccountsTreeNode> item = AccountsTreeItemFactory.getInstance().newTreeItem(this.name, AccountsTreeLevels.COLLECTION);
+        generateContextMenu(item);
         item.getChildren().addAll(generateContainerOptions());
         return item;
+    }
+
+    private void generateContextMenu(TreeItem<AccountsTreeNode> item) {
+        ContextMenu itemsContextMenu = new ContextMenu();
+        MenuItem queryTabMenuOption = new MenuItem("Query Tab");
+        queryTabMenuOption.setUserData(this);
+        queryTabMenuOption.setOnAction(AccountsViewController::launchQueryTab);
+        itemsContextMenu.getItems().add(queryTabMenuOption);
+        item.getValue().setContextMenu(itemsContextMenu);
     }
 
     private List<TreeItem<AccountsTreeNode>> generateContainerOptions() {
