@@ -2,15 +2,14 @@
 
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
+<?import org.cosmy.view.QueryPaneContextBar?>
 <AnchorPane xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1">
     <SplitPane fx:id="querySplitPane" dividerPositions="0.5" AnchorPane.leftAnchor="0.0"
                AnchorPane.rightAnchor="0.0" AnchorPane.bottomAnchor="0.0" AnchorPane.topAnchor="0.0"
                orientation="VERTICAL">
         <VBox>
-            <HBox>
-                <HBox fx:id="queryPaneToolbarLeft" prefHeight="40.0" spacing="10" alignment="CENTER_LEFT" HBox.hgrow="ALWAYS">
-                    <Label accessibleText="Query Pane" text="Query Pane"/>
-                </HBox>
+            <HBox prefHeight="40.0">
+                <QueryPaneContextBar fx:id="queryPaneToolbarLeft" alignment="CENTER_LEFT" HBox.hgrow="ALWAYS"/>
                 <HBox fx:id="queryPaneToolbarRight" prefHeight="40.0" spacing="10" alignment="CENTER_RIGHT" HBox.hgrow="ALWAYS">
                     <Label text="Running Status..."/>
                 </HBox>
