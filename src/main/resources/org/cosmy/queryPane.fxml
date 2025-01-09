@@ -19,7 +19,7 @@
         </VBox>
         <VBox>
             <HBox>
-                <HBox prefHeight="40" HBox.hgrow="ALWAYS">
+                <HBox prefHeight="40" alignment="CENTER_LEFT" HBox.hgrow="ALWAYS">
                     <Label text="Results" HBox.hgrow="NEVER"/>
                 </HBox>
                 <HBox prefHeight="40" alignment="CENTER_RIGHT" HBox.hgrow="ALWAYS">
