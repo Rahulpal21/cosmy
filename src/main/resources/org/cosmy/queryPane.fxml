@@ -3,40 +3,34 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <AnchorPane xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1">
-    <children>
-        <SplitPane fx:id="querySplitPane" dividerPositions="0.5" AnchorPane.leftAnchor="0.0"
-                   AnchorPane.rightAnchor="0.0" AnchorPane.bottomAnchor="0.0" AnchorPane.topAnchor="0.0"
-                   orientation="VERTICAL">
-            <items>
-                <VBox AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
-                    <children>
-                        <HBox prefHeight="40.0">
-                            <children>
-                                <Label accessibleText="Query Pane" text="Query Pane" />
-                                <Label text="Running Status..."/>
-                            </children>
-                        </HBox>
-                        <TextArea fx:id="queryTextArea" VBox.vgrow="ALWAYS"/>
-                    </children>
-                </VBox>
-                <VBox>
-                    <children>
-                        <HBox prefHeight="40">
-                            <children>
-                                <Label text="Results" HBox.hgrow="NEVER"/>
-                                <ToolBar prefHeight="40.0" HBox.hgrow="NEVER">
-                                    <items>
-                                        <ToggleButton mnemonicParsing="false" text="Collapse"/>
-                                        <ToggleButton mnemonicParsing="false" text="Wrap"/>
-                                        <ToggleButton mnemonicParsing="false" text="Json"/>
-                                    </items>
-                                </ToolBar>
-                            </children>
-                        </HBox>
-                        <TextArea fx:id="resultsPane" VBox.vgrow="ALWAYS"/>
-                    </children>
-                </VBox>
-            </items>
-        </SplitPane>
-    </children>
+    <SplitPane fx:id="querySplitPane" dividerPositions="0.5" AnchorPane.leftAnchor="0.0"
+               AnchorPane.rightAnchor="0.0" AnchorPane.bottomAnchor="0.0" AnchorPane.topAnchor="0.0"
+               orientation="VERTICAL">
+        <VBox>
+            <HBox>
+                <HBox prefHeight="40.0" spacing="10" alignment="CENTER_LEFT" HBox.hgrow="ALWAYS">
+                    <Label accessibleText="Query Pane" text="Query Pane"/>
+                </HBox>
+                <HBox prefHeight="40.0" spacing="10" alignment="CENTER_RIGHT" HBox.hgrow="ALWAYS">
+                    <Label text="Running Status..."/>
+                </HBox>
+            </HBox>
+            <TextArea fx:id="queryTextArea" VBox.vgrow="ALWAYS"/>
+        </VBox>
+        <VBox>
+            <HBox>
+                <HBox prefHeight="40" HBox.hgrow="ALWAYS">
+                    <Label text="Results" HBox.hgrow="NEVER"/>
+                </HBox>
+                <HBox prefHeight="40" alignment="CENTER_RIGHT" HBox.hgrow="ALWAYS">
+                    <ToolBar prefHeight="40.0" HBox.hgrow="NEVER">
+                        <ToggleButton mnemonicParsing="false" text="Collapse"/>
+                        <ToggleButton mnemonicParsing="false" text="Wrap"/>
+                        <ToggleButton mnemonicParsing="false" text="Json"/>
+                    </ToolBar>
+                </HBox>
+            </HBox>
+            <TextArea fx:id="resultsPane" VBox.vgrow="ALWAYS"/>
+        </VBox>
+    </SplitPane>
 </AnchorPane>
