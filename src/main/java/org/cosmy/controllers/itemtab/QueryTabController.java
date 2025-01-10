@@ -1,9 +1,14 @@
 package org.cosmy.controllers.itemtab;
 
 import javafx.collections.ObservableList;
+import javafx.event.EventType;
 import javafx.fxml.FXML;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TextArea;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyCodeCombination;
+import javafx.scene.input.KeyCombination;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.HBox;
 import org.cosmy.context.ConnectionsContainer;
 import org.cosmy.context.IObservableModelRegistry;
@@ -50,6 +55,13 @@ public class QueryTabController implements IController {
         IObservableModelRegistry modelRegistry = ObservableModelRegistryImpl.getInstance();
         ObservableList<Tab> tabs = (ObservableList<Tab>) modelRegistry.lookup(ObservableModelKey.TABS);
         queryPaneToolbarLeft.initialize(extractDatabaseList(container), container);
+
+        KeyCombination keyCombination = new KeyCodeCombination(KeyCode.ENTER, KeyCombination.CONTROL_DOWN);
+        queryPaneEditor.addEventHandler(KeyEvent.KEY_PRESSED, keyEvent -> {
+            if(keyCombination.match(keyEvent)){
+                System.out.println("CNTRL + ENTER  pressed");
+            }
+        });
     }
 
     private Set<CosmosDatabase> extractDatabaseList(CosmosContainer container) {
