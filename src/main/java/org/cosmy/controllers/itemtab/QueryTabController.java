@@ -8,7 +8,6 @@ import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.Tab;
-import javafx.scene.control.TextArea;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
@@ -22,6 +21,7 @@ import org.cosmy.model.ObservableModelKey;
 import org.cosmy.spec.IController;
 import org.cosmy.utils.AppConstants;
 import org.cosmy.view.DialogPopup;
+import org.cosmy.view.JsonTextArea;
 import org.cosmy.view.QueryPaneContextBar;
 import reactor.core.publisher.Flux;
 
@@ -38,13 +38,13 @@ public class QueryTabController implements IController {
     @FXML
     private HBox queryPaneToolbarRight;
     @FXML
-    private TextArea queryPaneEditor;
+    private JsonTextArea queryPaneEditor;
     @FXML
     private HBox resultsPaneToolbarLeft;
     @FXML
     private HBox resultsPaneToolbarRight;
     @FXML
-    private TextArea resultsPane;
+    private JsonTextArea resultsPane;
 
     private final ObjectMapper jsonPrinter;
 
@@ -76,12 +76,13 @@ public class QueryTabController implements IController {
 
     private void submitQuery(String query) {
         CosmosPagedFlux<Map> pagedFlux = container.getAsyncContainer().queryItems(query, Map.class);
+        resultsPane.clear();
         Flux<FeedResponse<Map>> page = pagedFlux.byPage(AppConstants.RESULTS_PAGE_SIZE);
         page.handle((mapFeedResponse, synchronousSink) -> {
             mapFeedResponse.getElements().forEach(map -> {
                 Platform.runLater(() -> {
                     try {
-                        resultsPane.appendText(jsonPrinter.writeValueAsString(map)+"\n");
+                        resultsPane.appendText(jsonPrinter.writeValueAsString(map) + "\n");
                     } catch (JsonProcessingException e) {
                         System.out.println(e);
                         //TODO log error on dialog or console
