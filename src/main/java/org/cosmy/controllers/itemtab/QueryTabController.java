@@ -22,6 +22,7 @@ import org.cosmy.model.ObservableModelKey;
 import org.cosmy.spec.IController;
 import org.cosmy.utils.AppConstants;
 import org.cosmy.view.DialogPopup;
+import org.cosmy.view.JsonTextArea;
 import org.cosmy.view.QueryPaneContextBar;
 import reactor.core.publisher.Flux;
 
@@ -38,7 +39,7 @@ public class QueryTabController implements IController {
     @FXML
     private HBox queryPaneToolbarRight;
     @FXML
-    private TextArea queryPaneEditor;
+    private JsonTextArea queryPaneEditor;
     @FXML
     private HBox resultsPaneToolbarLeft;
     @FXML

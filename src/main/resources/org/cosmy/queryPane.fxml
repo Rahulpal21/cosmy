@@ -2,6 +2,7 @@
 
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
+<?import org.cosmy.view.JsonTextArea?>
 <?import org.cosmy.view.QueryPaneContextBar?>
 <AnchorPane xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1">
     <SplitPane fx:id="querySplitPane" dividerPositions="0.5" AnchorPane.leftAnchor="0.0"
@@ -10,11 +11,12 @@
         <VBox>
             <HBox prefHeight="40.0">
                 <QueryPaneContextBar fx:id="queryPaneToolbarLeft" alignment="CENTER_LEFT" HBox.hgrow="ALWAYS"/>
-                <HBox fx:id="queryPaneToolbarRight" prefHeight="40.0" spacing="10" alignment="CENTER_RIGHT" HBox.hgrow="ALWAYS">
+                <HBox fx:id="queryPaneToolbarRight" prefHeight="40.0" spacing="10" alignment="CENTER_RIGHT"
+                      HBox.hgrow="ALWAYS">
                     <Label text="Running Status..."/>
                 </HBox>
             </HBox>
-            <TextArea fx:id="queryPaneEditor" VBox.vgrow="ALWAYS"/>
+            <JsonTextArea fx:id="queryPaneEditor" VBox.vgrow="ALWAYS"/>
         </VBox>
         <VBox>
             <HBox>
