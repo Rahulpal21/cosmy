@@ -31,7 +31,7 @@
                     </ToolBar>
                 </HBox>
             </HBox>
-            <TextArea fx:id="resultsPane" VBox.vgrow="ALWAYS"/>
+            <JsonTextArea fx:id="resultsPane" VBox.vgrow="ALWAYS"/>
         </VBox>
     </SplitPane>
 </AnchorPane>
