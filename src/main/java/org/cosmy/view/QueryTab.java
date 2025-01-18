@@ -5,7 +5,7 @@ import javafx.scene.control.Tab;
 import javafx.scene.layout.AnchorPane;
 import org.cosmy.context.IObservableModelRegistry;
 import org.cosmy.context.ObservableModelRegistryImpl;
-import org.cosmy.controllers.itemtab.QueryTabController;
+import org.cosmy.controllers.QueryTabController;
 import org.cosmy.model.CosmosContainer;
 import org.cosmy.model.ObservableModelKey;
 import org.cosmy.spec.CosmyException;

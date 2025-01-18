@@ -1,4 +1,4 @@
-package org.cosmy.controllers.itemtab;
+package org.cosmy.controllers;
 
 import com.azure.cosmos.models.FeedResponse;
 import com.azure.cosmos.util.CosmosPagedFlux;
@@ -15,6 +15,7 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.HBox;
 import org.cosmy.context.IObservableModelRegistry;
 import org.cosmy.context.ObservableModelRegistryImpl;
+import org.cosmy.controllers.itemtab.JsonPrinterFactory;
 import org.cosmy.model.CosmosContainer;
 import org.cosmy.model.CosmosDatabase;
 import org.cosmy.model.ObservableModelKey;
@@ -23,11 +24,12 @@ import org.cosmy.utils.AppConstants;
 import org.cosmy.view.DialogPopup;
 import org.cosmy.view.JsonTextArea;
 import org.cosmy.view.QueryPaneContextBar;
+import org.fxmisc.richtext.model.Paragraph;
+import org.fxmisc.richtext.model.StyleSpans;
+import org.fxmisc.richtext.model.StyleSpansBuilder;
 import reactor.core.publisher.Flux;
 
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public class QueryTabController implements IController {
     private final CosmosContainer container;
@@ -65,12 +67,34 @@ public class QueryTabController implements IController {
         queryPaneToolbarLeft.initialize(extractDatabaseList(container), container);
 
         KeyCombination keyCombination = new KeyCodeCombination(KeyCode.ENTER, KeyCombination.CONTROL_DOWN);
+
         queryPaneEditor.addEventHandler(KeyEvent.KEY_PRESSED, keyEvent -> {
             if (keyCombination.match(keyEvent)) {
                 String query = extractRawQuery();
                 submitQuery(query);
+            }else if(KeyCode.ENTER.equals(keyEvent.getCode())){
+                finalizeParagraph();
             }
         });
+        queryPaneEditor.textProperty().addListener((observableValue, oldText, newText) -> {
+//            System.out.println(oldText);
+//            System.out.println(newText);
+        });
+
+    }
+
+    private void finalizeParagraph() {
+        String text = queryPaneEditor.getParagraph(queryPaneEditor.getCurrentParagraph() - 1).getText();
+        StyleSpansBuilder<Collection<String>> spansBuilder = new StyleSpansBuilder<>();
+        StringTokenizer tokenizer = new StringTokenizer(text, " ");
+        while(tokenizer.hasMoreTokens()){
+            String token = tokenizer.nextToken();
+            spansBuilder.add(Collections.singletonList(token), token.length());
+        }
+        StyleSpans<Collection<String>> styleSpans = spansBuilder.create();
+        queryPaneEditor.setStyleSpans(0, styleSpans);
+        Paragraph<Collection<String>, String, Collection<String>> paragraph = queryPaneEditor.getParagraph(queryPaneEditor.getCurrentParagraph());
+        System.out.println(paragraph);
 
     }
 
