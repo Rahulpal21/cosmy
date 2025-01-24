@@ -20,7 +20,8 @@ import org.cosmy.model.CosmosDatabase;
 import org.cosmy.model.ObservableModelKey;
 import org.cosmy.spec.IController;
 import org.cosmy.utils.AppConstants;
-import org.cosmy.view.DialogPopup;
+import org.cosmy.utils.DialogUtils;
+import org.cosmy.view.dialog.DialogPopup;
 import org.cosmy.view.JsonTextArea;
 import org.cosmy.view.QueryPaneContextBar;
 import reactor.core.publisher.Flux;
@@ -90,7 +91,9 @@ public class QueryTabController implements IController {
                 });
             });
         }).doOnError(throwable -> {
-            new DialogPopup(throwable.getMessage());
+            Platform.runLater(() -> {
+                DialogUtils.showErrorDialog(throwable.getMessage());
+            });
         }).subscribe();
 
     }

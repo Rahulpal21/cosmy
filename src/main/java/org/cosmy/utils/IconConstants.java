@@ -11,4 +11,9 @@ public interface IconConstants {
 
     //https://kordamp.org/ikonli/cheat-sheet-antdesignicons.html#_outlined_boxiconsoutlined
     String ITEMS_OPTION_ICON = "anto-table";
- }
+
+    String ALERT_ICON_ROUND = "anto-info-circle";
+    String ALERT_ICON_TRIANGLE = "anto-warning";
+    String ALERT_ICON_QUESTION = "anto-question-circle";
+
+}
