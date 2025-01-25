@@ -36,7 +36,7 @@ public class QueryTab implements IVisualElement {
     public void initialize() {
         try {
             queryPane = (AnchorPane) FXMLUtils.loadFXML(FXMLConstants.QUERY_TAB_FXML, controller);
-            tab = new Tab(container.getName(), queryPane);
+            tab = new Tab(generateTabName(container), queryPane);
             IObservableModelRegistry modelRegistry = ObservableModelRegistryImpl.getInstance();
             ObservableList<Tab> tabsList = (ObservableList<Tab>) modelRegistry.lookup(ObservableModelKey.TABS);
             tabsList.add(tab);
@@ -44,6 +44,11 @@ public class QueryTab implements IVisualElement {
         } catch (IOException e) {
             throw new CosmyException(e.getMessage(), e);
         }
+    }
+
+    private String generateTabName(CosmosContainer container) {
+        return container.getName().concat(".Query");
+//                concat(container.getParent().getName()).concat("@").concat(container.getParent().getParent().getName());
     }
 
     /**
