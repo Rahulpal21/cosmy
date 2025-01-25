@@ -13,7 +13,7 @@
                 <QueryPaneContextBar fx:id="queryPaneToolbarLeft" alignment="CENTER_LEFT" HBox.hgrow="ALWAYS"/>
                 <HBox fx:id="queryPaneToolbarRight" prefHeight="40.0" spacing="10" alignment="CENTER_RIGHT"
                       HBox.hgrow="ALWAYS">
-                    <Label text="Running Status..."/>
+<!--                    <Label text="Running Status..."/>-->
                 </HBox>
             </HBox>
             <JsonTextArea fx:id="queryPaneEditor" VBox.vgrow="ALWAYS"/>
@@ -24,11 +24,11 @@
                     <Label text="Results" HBox.hgrow="NEVER"/>
                 </HBox>
                 <HBox fx:id="resultsPaneToolbarRight" prefHeight="40" alignment="CENTER_RIGHT" HBox.hgrow="ALWAYS">
-                    <ToolBar prefHeight="40.0" HBox.hgrow="NEVER">
-                        <ToggleButton fx:id="resultsCollapseButton" mnemonicParsing="false" text="Collapse"/>
-                        <ToggleButton fx:id="resultsCollapseWrap" mnemonicParsing="false" text="Wrap"/>
-                        <ToggleButton fx:id="resultsCollapseJsonTableToggleButton" mnemonicParsing="false" text="Json"/>
-                    </ToolBar>
+<!--                    <ToolBar prefHeight="40.0" HBox.hgrow="NEVER">-->
+<!--                        <ToggleButton fx:id="resultsCollapseButton" mnemonicParsing="false" text="Collapse"/>-->
+<!--                        <ToggleButton fx:id="resultsCollapseWrap" mnemonicParsing="false" text="Wrap"/>-->
+<!--                        <ToggleButton fx:id="resultsCollapseJsonTableToggleButton" mnemonicParsing="false" text="Json"/>-->
+<!--                    </ToolBar>-->
                 </HBox>
             </HBox>
             <JsonTextArea fx:id="resultsPane" VBox.vgrow="ALWAYS"/>
