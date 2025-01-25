@@ -8,8 +8,11 @@ public interface DialogFactory {
     }
 
     Dialog createErrorDialog(String message);
+
     Dialog createWarnDialog(String message);
+
     Dialog createInfoDialog(String message);
+
     Dialog createConfirmDialog(String message);
 
 }

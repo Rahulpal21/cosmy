@@ -22,17 +22,15 @@ public class DialogPopup extends Dialog {
         messageContainer = new Label();
         messageContainer.setWrapText(true);
         messageContainer.setPrefWidth(500);
-        super.getDialogPane().getButtonTypes().add(ButtonType.OK);
         getDialogPane().setContent(messageContainer);
-
     }
 
     void enableOKButton() {
-//        okButton.setVisible(true);
+        super.getDialogPane().getButtonTypes().add(ButtonType.OK);
     }
 
     void enableCancelButton() {
-//        cancelButton.setVisible(true);
+        super.getDialogPane().getButtonTypes().add(ButtonType.CANCEL);
     }
 
     public void setMessageContainer(String message) {
@@ -44,6 +42,7 @@ public class DialogPopup extends Dialog {
         if (message.length() > 256) {
             tooltip = new Tooltip(message);
             tooltip.setWrapText(true);
+            tooltip.setPrefWidth(messageContainer.getPrefWidth());
             messageContainer.setTooltip(tooltip);
             return message.substring(0, 255).concat("...");
         } else {
