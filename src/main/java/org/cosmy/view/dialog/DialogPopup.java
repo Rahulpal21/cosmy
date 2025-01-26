@@ -21,7 +21,7 @@ public class DialogPopup extends Dialog {
         super.initStyle(StageStyle.UTILITY);
         messageContainer = new Label();
         messageContainer.setWrapText(true);
-        messageContainer.setPrefWidth(500);
+        messageContainer.setPrefWidth(350);
         getDialogPane().setContent(messageContainer);
     }
 

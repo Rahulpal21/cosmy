@@ -51,12 +51,12 @@
                         <FontIcon iconLiteral="remixal-edit-2-line"/>
                     </graphic>
                 </Button>
-                <Button fx:id="validateItemButton" mnemonicParsing="false" text="Validate"
-                        disable="true">
-                    <graphic>
-                        <FontIcon iconLiteral="remixal-check-double-line"/>
-                    </graphic>
-                </Button>
+<!--                <Button fx:id="validateItemButton" mnemonicParsing="false" text="Validate"-->
+<!--                        disable="true">-->
+<!--                    <graphic>-->
+<!--                        <FontIcon iconLiteral="remixal-check-double-line"/>-->
+<!--                    </graphic>-->
+<!--                </Button>-->
                 <Button fx:id="saveItemButton" mnemonicParsing="false" text="Save" disable="true">
                     <graphic>
                         <FontIcon iconLiteral="remixmz-save-line"/>
