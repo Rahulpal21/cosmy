@@ -13,6 +13,8 @@ public interface DialogFactory {
 
     Dialog createInfoDialog(String message);
 
+    Dialog createSuccessDialog(String message);
+
     Dialog createConfirmDialog(String message);
 
 }

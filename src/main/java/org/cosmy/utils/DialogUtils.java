@@ -13,7 +13,7 @@ public class DialogUtils {
     }
 
     public static void showSuccessDialog(String message) {
-        Dialog<String> dialog = factory.createInfoDialog(message);
+        Dialog<String> dialog = factory.createSuccessDialog(message);
         dialog.showAndWait();
     }
 

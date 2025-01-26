@@ -12,6 +12,7 @@ public class DefaultStyledDialogFactory implements DialogFactory {
     private static String ICON_ERROR = ALERT_ICON_TRIANGLE;
     private static String ICON_WARN = ALERT_ICON_TRIANGLE;
     private static String ICON_INFO = ALERT_ICON_ROUND;
+    private static String ICON_SUCCESS = ALERT_ICON_CHECK;
     private static String ICON_CONFIRM = ALERT_ICON_QUESTION;
     private static String TITLE_ERROR = "Error";
     private static String TITLE_WARN = "Warning";
@@ -37,6 +38,11 @@ public class DefaultStyledDialogFactory implements DialogFactory {
     }
 
     @Override
+    public Dialog createSuccessDialog(String message) {
+        return createNewDialog(Alert.AlertType.INFORMATION, ICON_SUCCESS, TITLE_INFO, message, DefaultStyledDialogFactory::decorateOKButtons);
+    }
+
+    @Override
     public Dialog createConfirmDialog(String message) {
         return createNewDialog(Alert.AlertType.CONFIRMATION, ICON_CONFIRM, TITLE_CONFIRMATION, message, DefaultStyledDialogFactory::decorateConfirmButtons);
     }
@@ -44,7 +50,9 @@ public class DefaultStyledDialogFactory implements DialogFactory {
     private Dialog createNewDialog(Alert.AlertType alertType, String icon, String title, String message, Function<DialogPopup, DialogPopup> applyActionButtons) {
         DialogPopup dialog = new DialogPopup();
         dialog.setTitle(title);
-        dialog.setGraphic(new FontIcon(icon));
+        FontIcon fontIcon = new FontIcon(icon);
+        fontIcon.setIconSize(20);
+        dialog.setGraphic(fontIcon);
         dialog.setMessageContainer(message);
         return applyActionButtons.apply(dialog);
     }

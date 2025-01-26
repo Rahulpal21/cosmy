@@ -15,5 +15,6 @@ public interface IconConstants {
     String ALERT_ICON_ROUND = "anto-info-circle";
     String ALERT_ICON_TRIANGLE = "anto-warning";
     String ALERT_ICON_QUESTION = "anto-question-circle";
+    String ALERT_ICON_CHECK = "anto-check-circle";
 
 }
