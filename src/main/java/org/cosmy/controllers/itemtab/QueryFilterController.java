@@ -16,14 +16,14 @@ public class QueryFilterController implements IController {
 
     private CosmosContainer container;
     private ItemTabController parentController;
-    private TextField filterQuery;
+//    private TextField filterQuery;
     private Button reloadItemsButton;
     private Button clearFilterButton;
 
     public QueryFilterController(ItemTabController parentController, CosmosContainer container, TextField filterQuery, Button reloadItemsButton, Button clearFilterButton) {
         this.parentController = parentController;
         this.container = container;
-        this.filterQuery = filterQuery;
+//        this.filterQuery = filterQuery;
         this.reloadItemsButton = reloadItemsButton;
         this.clearFilterButton = clearFilterButton;
     }
@@ -39,7 +39,7 @@ public class QueryFilterController implements IController {
             parentController.loadItems();
         });
 
-        filterQuery.setOnMouseClicked(mouseEvent -> {
+/*        filterQuery.setOnMouseClicked(mouseEvent -> {
             if (!filterSet.get()) {
                 filterQuery.clear();
                 filterQuery.setEditable(true);
@@ -51,7 +51,7 @@ public class QueryFilterController implements IController {
                 setFilterString();
                 parentController.loadItems();
             }
-        });
+        });*/
     }
 
     public SqlQuerySpec getFilterQuery() {
@@ -70,26 +70,26 @@ public class QueryFilterController implements IController {
     }
 
     private void clearFilter() {
-        this.filterQuery.clear();
-        this.filterQuery.setText("SELECT * FROM c WHERE");
-        this.filterQuery.setEditable(false);
+//        this.filterQuery.clear();
+//        this.filterQuery.setText("SELECT * FROM c WHERE");
+//        this.filterQuery.setEditable(false);
         this.filterString = null;
         this.filterSet.set(false);
     }
 
     private void setFilterString() {
-        if (validateFilterString(this.filterQuery.getText())) {
-            this.filterString = this.filterQuery.getText();
-            filterSet.set(true);
-        }
+//        if (validateFilterString(this.filterQuery.getText())) {
+//            this.filterString = this.filterQuery.getText();
+//            filterSet.set(true);
+//        }
     }
 
-    private boolean validateFilterString(String filterString) {
+/*    private boolean validateFilterString(String filterString) {
         if (filterString != null && !filterString.isEmpty()) {
             // TODD filter query validation rules
             return true;
         }
         return false;
-    }
+    }*/
 
 }

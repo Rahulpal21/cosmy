@@ -14,14 +14,19 @@
                             <FontIcon iconLiteral="anto-reload"/>
                         </graphic>
                     </Button>
+                    <Button fx:id="filterItemsButton" mnemonicParsing="false" text="Filter">
+                        <graphic>
+                            <FontIcon iconLiteral="anto-filter"/>
+                        </graphic>
+                    </Button>
                     <Button fx:id="clearFilterButton" mnemonicParsing="false" text="Clear">
                         <graphic>
                             <FontIcon iconLiteral="anto-close"/>
                         </graphic>
                     </Button>
                 </ToolBar>
-                <TextField text="SELECT * FROM WHERE" editable="false" fx:id="filterQuery"
-                           VBox.vgrow="NEVER"/>
+                <!--<TextField text="SELECT * FROM WHERE" editable="false" fx:id="filterQuery"
+                           VBox.vgrow="NEVER"/>-->
                 <ListView id="itemList" fx:id="itemListView" accessibleText="This is accessible text"
                           VBox.vgrow="ALWAYS"/>
                 <ToolBar prefHeight="40.0" prefWidth="200.0" VBox.vgrow="NEVER">
