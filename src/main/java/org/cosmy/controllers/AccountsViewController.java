@@ -109,6 +109,6 @@ public class AccountsViewController implements IController {
         MenuItem eventSource = (MenuItem) event.getSource();
         CosmosContainer container = (CosmosContainer) eventSource.getUserData();
         new QueryTab(container).initialize();
-        System.out.println("query tab launched");
     }
+
 }

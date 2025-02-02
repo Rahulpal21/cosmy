@@ -109,7 +109,7 @@ public class ItemTabController implements IController {
     private CosmosPaginable<Map> createPaginationContext() {
         //initialize pagination context
         CosmosPaginationBuilder<Map> paginationBuilder = new CosmosPaginationBuilder<>();
-        if(Preferences.getInstance().getPageLength()>=0){
+        if (Preferences.getInstance().getPageLength() >= 0) {
             paginationBuilder.setPageSize(Preferences.getInstance().getPageLength());
         }
         return paginationBuilder.build(container.getContainer(), filterController.getFilterQuery(), Map.class);
@@ -151,19 +151,6 @@ public class ItemTabController implements IController {
         });
 
         refreshPaginationButtons();
-    }
-
-    public void showErrorDialog(String errorMessage) {
-        //TODO take error dialog to a common utility across whole project
-        Dialog<String> dialog = new Dialog<>();
-        dialog.setResizable(true);
-        dialog.setHeight(180);
-        dialog.setWidth(500);
-        dialog.setTitle("Error");
-        ButtonType okButton = new ButtonType("Ok", ButtonBar.ButtonData.OK_DONE);
-        dialog.setContentText(errorMessage);
-        dialog.getDialogPane().getButtonTypes().add(okButton);
-        dialog.showAndWait();
     }
 
     public void reloadItems() {

@@ -11,6 +11,7 @@ module org.cosmy {
     requires cosmos.paginator;
     requires org.jetbrains.annotations;
     requires org.fxmisc.richtext;
+    requires java.desktop;
 
     opens org.cosmy to javafx.fxml;
     exports org.cosmy;
@@ -26,4 +27,6 @@ module org.cosmy {
     opens org.cosmy.context to javafx.fxml;
     exports org.cosmy.controllers.itemtab;
     opens org.cosmy.controllers.itemtab to javafx.fxml;
+    exports org.cosmy.view.dialog;
+    opens org.cosmy.view.dialog to javafx.fxml;
 }

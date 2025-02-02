@@ -13,6 +13,9 @@ import org.cosmy.model.CosmosContainer;
 import org.cosmy.spec.IController;
 import org.cosmy.ui.CosmosItem;
 import org.cosmy.utils.CosmosItemAttributes;
+import org.cosmy.utils.CosmosStatusTranslator;
+import org.cosmy.utils.CosmyCosmosOperation;
+import org.cosmy.utils.DialogUtils;
 import org.cosmy.view.JsonTextArea;
 import reactor.core.publisher.Mono;
 
@@ -31,7 +34,7 @@ public class ItemViewPaneController implements IController {
     private final Button newItemButton;
     private final Button saveItemButton;
     private final Button deleteItemButton;
-    private final Button validateItemButton;
+    //    private final Button validateItemButton;
     private final Button editItemButton;
 
     private final ObjectMapper jsonPrinter;
@@ -43,7 +46,7 @@ public class ItemViewPaneController implements IController {
         this.newItemButton = newItemButton;
         this.saveItemButton = saveItemButton;
         this.deleteItemButton = deleteItemButton;
-        this.validateItemButton = validateItemButton;
+//        this.validateItemButton = validateItemButton;
         this.editItemButton = editItemButton;
 
         this.jsonPrinter = JsonPrinterFactory.getJsonPrinter();
@@ -52,13 +55,13 @@ public class ItemViewPaneController implements IController {
     @Override
     public void initialize() {
         itemTextArea.textProperty().addListener((observableValue, oldVal, newVal) -> {
-            if (validateItemButton.isDisabled()) {
-                this.validateItemButton.setDisable(false);
+            if (saveItemButton.isDisabled()) {
+                this.saveItemButton.setDisable(false);
             }
         });
         deleteItemButton.setOnAction(event -> deleteItem());
         newItemButton.setOnAction(event -> newItem());
-        validateItemButton.setOnAction(event -> validateNewItemJson());
+//        validateItemButton.setOnAction(event -> validateNewItemJson());
         saveItemButton.setOnAction(event -> saveItem());
         editItemButton.setOnAction(event -> editItem());
     }
@@ -67,15 +70,28 @@ public class ItemViewPaneController implements IController {
         if (((Optional) this.deleteItemButton.getUserData()).isEmpty()) {
             return;
         }
+
         CosmosItem item = (CosmosItem) ((Optional) this.deleteItemButton.getUserData()).get();
-        container.getAsyncContainer().deleteItem(item.getItemId(), new PartitionKey(item.getPartitionKey())).doOnSuccess(objectCosmosItemResponse -> {
-            clearItemReadingPaneOnPlatformThread();
-            parentController.removeItemFromListView(item);
-            disableDeleteButtonOnPlatformThread();
-        }).doOnError(throwable -> {
-            //TODO error dialog
-            System.out.println(throwable);
-        }).subscribe();
+
+        if (!DialogUtils.showConfirmDialog("Confirm delete for item " + item.getItemId() + " ?")) {
+            return;
+        }
+
+        container.getAsyncContainer().deleteItem(item.getItemId(), new PartitionKey(item.getPartitionKey()))
+                .doOnSuccess(response -> {
+                    clearItemReadingPaneOnPlatformThread();
+                    parentController.removeItemFromListView(item);
+                    disableDeleteButtonOnPlatformThread();
+                    disableSaveButtonOnPlatformThread();
+                    disableEditButtonOnPlatformThread();
+                    Platform.runLater(() -> {
+                        DialogUtils.showSuccessDialog(CosmosStatusTranslator.translate(response.getStatusCode(), CosmyCosmosOperation.DELETE));
+                    });
+                }).doOnError(throwable -> {
+                    Platform.runLater(() -> {
+                        DialogUtils.showErrorDialog(throwable.getMessage());
+                    });
+                }).subscribe();
     }
 
     private void clearItemReadingPaneOnPlatformThread() {
@@ -90,9 +106,27 @@ public class ItemViewPaneController implements IController {
         Platform.runLater(this::disableDeleteButton);
     }
 
+    private void disableSaveButtonOnPlatformThread() {
+        Platform.runLater(this::disableSaveButton);
+    }
+
+    private void disableEditButtonOnPlatformThread() {
+        Platform.runLater(this::disableEditButton);
+    }
+
     private void disableDeleteButton() {
         this.deleteItemButton.setDisable(true);
         this.deleteItemButton.setUserData(Optional.ofNullable(null));
+    }
+
+    private void disableSaveButton() {
+        this.saveItemButton.setDisable(true);
+        this.saveItemButton.setUserData(Optional.ofNullable(null));
+    }
+
+    private void disableEditButton() {
+        this.editItemButton.setDisable(true);
+        this.editItemButton.setUserData(Optional.ofNullable(null));
     }
 
     private void newItem() {
@@ -104,7 +138,7 @@ public class ItemViewPaneController implements IController {
             disableDeleteButton();
             this.itemTextArea.setText(template);
             this.itemTextArea.setEditable(true);
-            this.validateItemButton.setDisable(true);
+//            this.validateItemButton.setDisable(true);
 //            });
         } catch (JsonProcessingException e) {
             //TODO error dialog
@@ -119,22 +153,16 @@ public class ItemViewPaneController implements IController {
         return this.jsonPrinter.writeValueAsString(itemTemplateAttributes);
     }
 
-    private void validateNewItemJson() {
-        String input = this.itemTextArea.getText();
-        if (validateJson(input)) {
-            Platform.runLater(() -> this.saveItemButton.setDisable(false));
-        } else {
-            parentController.showErrorDialog("Json is not valid");
-        }
+    private boolean validateNewItemJson() {
+        return validateJson(this.itemTextArea.getText());
     }
 
     private boolean validateJson(String input) {
-        //TODO return error details
         try (Reader stringReader = new StringReader(input)) {
             this.jsonPrinter.readTree(stringReader);
             return true;
         } catch (IOException e) {
-            System.out.println(e.getMessage());
+            DialogUtils.showErrorDialog(e.getMessage());
             return false;
         }
     }
@@ -144,6 +172,10 @@ public class ItemViewPaneController implements IController {
     }
 
     private void saveItem() {
+        if (!validateNewItemJson()) {
+            return;
+        }
+
         String itemText = this.itemTextArea.getText();
         try (Reader reader = new StringReader(itemText)) {
             JsonNode jsonNode = jsonPrinter.readTree(reader);
@@ -156,16 +188,14 @@ public class ItemViewPaneController implements IController {
                 response = container.getAsyncContainer().replaceItem(jsonNode, id.get(), new PartitionKey(pKey));
             }
 
-            response.handle((createResponse, synchronousSink) -> {
-                //TODO handle diagnostic information if enabled through preferences
-                System.out.println(createResponse.getStatusCode());
-            }).doOnSuccess(object -> {
+            response.doOnSuccess(itemResponse -> {
                 //TODO success dialig or status bar/activity pane message
+                Platform.runLater(() -> DialogUtils.showSuccessDialog(CosmosStatusTranslator.translate(itemResponse.getStatusCode(), CosmyCosmosOperation.SAVE)));
             }).doOnError(throwable -> {
-                Platform.runLater(() -> parentController.showErrorDialog(throwable.getMessage()));
+                Platform.runLater(() -> DialogUtils.showErrorDialog(throwable.getMessage()));
             }).subscribe();
         } catch (IOException e) {
-            parentController.showErrorDialog(e.getMessage());
+            DialogUtils.showErrorDialog(e.getMessage());
         }
     }
 
@@ -202,7 +232,7 @@ public class ItemViewPaneController implements IController {
                         //TODO handle excepiton and route to error dialog
                     }
                     itemTextArea.setEditable(false);
-                    validateItemButton.setDisable(true);
+//                    validateItemButton.setDisable(true);
                     saveItemButton.setDisable(true);
                     editItemButton.setDisable(false);
                 });
