@@ -44,6 +44,8 @@ public class ItemTabController implements IController {
     @FXML
     private Button clearFilterButton;
     @FXML
+    private Button filterItemsButton;
+    @FXML
     private Button prevPageButton;
     @FXML
     private Button nextPageButton;
@@ -90,7 +92,7 @@ public class ItemTabController implements IController {
         //initialize sub-controllers
         viewPaneController = new ItemViewPaneController(this, container, itemTextArea, newItemButton, saveItemButton, deleteItemButton, validateItemButton, editItemButton);
         viewPaneController.initialize();
-        filterController = new QueryFilterController(this, container, filterQuery, reloadItemsButton, clearFilterButton);
+        filterController = new QueryFilterController(this, container, filterQuery, reloadItemsButton, clearFilterButton, filterItemsButton);
         filterController.initialize();
 
         //set action handlers for buttons
