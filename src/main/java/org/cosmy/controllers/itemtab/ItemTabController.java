@@ -68,7 +68,7 @@ public class ItemTabController implements IController {
 
     //sub-controllers
     private ItemViewPaneController viewPaneController;
-    private QueryFilterController filterController;
+    private ItemFilterController filterController;
 
     public ItemTabController(CosmosContainer container) {
         this.container = container;
@@ -92,7 +92,7 @@ public class ItemTabController implements IController {
         //initialize sub-controllers
         viewPaneController = new ItemViewPaneController(this, container, itemTextArea, newItemButton, saveItemButton, deleteItemButton, validateItemButton, editItemButton);
         viewPaneController.initialize();
-        filterController = new QueryFilterController(this, container, filterQuery, reloadItemsButton, clearFilterButton, filterItemsButton);
+        filterController = new ItemFilterController(this, container, filterQuery, reloadItemsButton, clearFilterButton, filterItemsButton);
         filterController.initialize();
 
         //set action handlers for buttons

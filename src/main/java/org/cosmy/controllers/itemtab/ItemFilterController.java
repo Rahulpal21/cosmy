@@ -7,9 +7,12 @@ import org.cosmy.model.CosmosContainer;
 import org.cosmy.spec.IController;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-public class QueryFilterController implements IController {
+public class ItemFilterController implements IController {
+
     private String filterString;
     private AtomicBoolean filterSet = new AtomicBoolean(false);
 
@@ -19,7 +22,7 @@ public class QueryFilterController implements IController {
     private Button clearFilterButton;
     private Button filterItemsButton;
 
-    public QueryFilterController(ItemTabController parentController, CosmosContainer container, TextField filterQuery, Button reloadItemsButton, Button clearFilterButton, Button filterItemsButton) {
+    public ItemFilterController(ItemTabController parentController, CosmosContainer container, TextField filterQuery, Button reloadItemsButton, Button clearFilterButton, Button filterItemsButton) {
         this.parentController = parentController;
         this.container = container;
         this.reloadItemsButton = reloadItemsButton;
@@ -34,7 +37,6 @@ public class QueryFilterController implements IController {
         });
 
         clearFilterButton.setOnAction(event -> {
-            clearFilter();
             parentController.loadItems();
         });
 
@@ -45,7 +47,11 @@ public class QueryFilterController implements IController {
     }
 
     private void showFilter() {
-        System.out.println("launch filter..");
+        Object result = new FilterGrid(new String[]{"=", "!="}, filters -> {
+            System.out.println(filters);
+            return 0;
+        }).showAndWait();
+        System.out.println(result);
     }
 
     public SqlQuerySpec getFilterQuery() {
@@ -67,5 +73,4 @@ public class QueryFilterController implements IController {
         this.filterString = null;
         this.filterSet.set(false);
     }
-
 }

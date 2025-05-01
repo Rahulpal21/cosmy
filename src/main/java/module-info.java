@@ -12,6 +12,7 @@ module org.cosmy {
     requires org.jetbrains.annotations;
     requires org.fxmisc.richtext;
     requires java.desktop;
+    requires org.controlsfx.controls;
 
     opens org.cosmy to javafx.fxml;
     exports org.cosmy;
