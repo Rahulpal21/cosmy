@@ -30,3 +30,9 @@ https://lmax-exchange.github.io/disruptor/disruptor.html
 
 json schema validation against schema https://github.com/erosb/json-sKema
 rich text library for text area Minm https://github.com/FXMisc/RichTextFX
+
+dialog types: https://examples.javacodegeeks.com/java-development/desktop-java/javafx/dialog-javafx/javafx-dialog-example/
+
+badges:
+https://shields.io/
+https://naereen.github.io/badges/

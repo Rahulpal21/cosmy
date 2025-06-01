@@ -30,4 +30,7 @@ module org.cosmy {
     opens org.cosmy.controllers.itemtab to javafx.fxml;
     exports org.cosmy.view.dialog;
     opens org.cosmy.view.dialog to javafx.fxml;
+    exports org.cosmy.controllers.itemFilter;
+    opens org.cosmy.controllers.itemFilter to javafx.fxml;
+
 }

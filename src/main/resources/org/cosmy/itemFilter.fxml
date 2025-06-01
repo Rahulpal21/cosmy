@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.layout.*?>
+<VBox alignment="CENTER" spacing="20.0" xmlns:fx="http://javafx.com/fxml"
+      fx:controller="org.cosmy.controllers.itemFilter.ItemFilterController">
+    <padding>
+        <Insets bottom="20.0" left="20.0" right="20.0" top="20.0"/>
+    </padding>
+    <ScrollPane>
+        <GridPane fx:id="grid" VBox.vgrow="ALWAYS" prefHeight="300" hgap="5" vgap="5">
+            <HBox spacing="5">
+                <Label text="Property"/>
+                <Label text="Condition"/>
+                <Label text="Expression"/>
+            </HBox>
+            <padding>
+                <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+            </padding>
+        </GridPane>
+    </ScrollPane>
+</VBox>

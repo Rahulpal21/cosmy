@@ -44,8 +44,6 @@ public class ItemTabController implements IController {
     @FXML
     private Button clearFilterButton;
     @FXML
-    private Button filterItemsButton;
-    @FXML
     private Button prevPageButton;
     @FXML
     private Button nextPageButton;
@@ -68,7 +66,7 @@ public class ItemTabController implements IController {
 
     //sub-controllers
     private ItemViewPaneController viewPaneController;
-    private ItemFilterController filterController;
+    private QueryFilterController filterController;
 
     public ItemTabController(CosmosContainer container) {
         this.container = container;
@@ -92,7 +90,7 @@ public class ItemTabController implements IController {
         //initialize sub-controllers
         viewPaneController = new ItemViewPaneController(this, container, itemTextArea, newItemButton, saveItemButton, deleteItemButton, validateItemButton, editItemButton);
         viewPaneController.initialize();
-        filterController = new ItemFilterController(this, container, filterQuery, reloadItemsButton, clearFilterButton, filterItemsButton);
+        filterController = new QueryFilterController(this, container, filterQuery, reloadItemsButton, clearFilterButton);
         filterController.initialize();
 
         //set action handlers for buttons
